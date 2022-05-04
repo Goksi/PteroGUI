@@ -1,0 +1,35 @@
+JFDML JFormDesigner: "7.0.5.4.420" Java: "11.0.14.1" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {space :p:30:p, par l:::p {comp appUrlLbl:::::x, comp apiKeyLbl:::::x}, space :::p, par l {comp button1::::127:x, comp textPane1::l::127:x, comp passwordField1::l:::x}, space :p:154:p}}"
+			"$verticalGroup": "par l {seq l {space :p:40:p, par l:::p {comp apiKeyLbl:::::x, comp passwordField1::::0:x}, space :p:52:p, par l:::p {comp appUrlLbl:::::x, comp textPane1::::0:x}, space :p:26:p, comp button1:::p::p, space ::12:x}}"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "apiKeyLbl"
+				"text": "Enter your API key here:"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "appUrlLbl"
+				"text": "Enter your app url here:"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "button1"
+				"text": "Save settings"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "button1", true ) )
+			} )
+			add( new FormComponent( "javax.swing.JPasswordField" ) {
+				name: "passwordField1"
+			} )
+			add( new FormComponent( "javax.swing.JTextPane" ) {
+				name: "textPane1"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 445, 190 )
+		} )
+	}
+}

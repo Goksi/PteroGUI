@@ -1,0 +1,25 @@
+JFDML JFormDesigner: "7.0.5.4.420" Java: "11.0.14.1" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {space :p:127:p, comp name:::p:167:p, space ::161:x}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp name:::p::p, space ::355:x}}"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "name"
+				"text": "Loading..."
+				"horizontalAlignment": 0
+				"icon": new com.jformdesigner.model.SwingIcon( 0, "/cool.png" )
+				"maximumSize": new java.awt.Dimension( 125, 32 )
+				"preferredSize": new java.awt.Dimension( 125, 32 )
+				"minimumSize": new java.awt.Dimension( 125, 32 )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 455, 380 )
+		} )
+	}
+}
