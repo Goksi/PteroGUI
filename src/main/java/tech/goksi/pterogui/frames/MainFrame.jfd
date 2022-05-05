@@ -4,22 +4,34 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq l {space :p:127:p, comp name:::p:167:p, space ::161:x}}"
-			"$verticalGroup": "par l {seq l {space :::p, comp name:::p::p, space ::355:x}}"
+			"$horizontalGroup": "par l {seq {par l {seq {space :p:127:p, comp name:::p:167:p}, seq l {space :::p, comp label1:::p::p, space s:::p, comp servers:::p:152:p}}, space ::161:x}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp name:::p::p, space s:::p, par b {comp label1::b:p::p, comp servers::b:p::p}, space ::184:x}}"
 		} ) {
 			name: "this"
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "name"
 				"text": "Loading..."
 				"horizontalAlignment": 0
-				"icon": new com.jformdesigner.model.SwingIcon( 0, "/cool.png" )
+				"icon": new com.jformdesigner.model.SwingIcon( 0, "/rsz_pterodactyl.png" )
 				"maximumSize": new java.awt.Dimension( 125, 32 )
 				"preferredSize": new java.awt.Dimension( 125, 32 )
 				"minimumSize": new java.awt.Dimension( 125, 32 )
 			} )
+			add( new FormComponent( "javax.swing.JComboBox" ) {
+				name: "servers"
+				auxiliary() {
+					"JavaCodeGenerator.variableGetter": true
+					"JavaCodeGenerator.typeParameters": "String"
+					"JavaCodeGenerator.customCreateCode": "new JComboBox<>(new String[]{\"You dont own any servers!\"});"
+				}
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Select your server: "
+			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 455, 380 )
+			"size": new java.awt.Dimension( 455, 265 )
 		} )
 	}
 }
