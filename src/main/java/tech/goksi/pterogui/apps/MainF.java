@@ -1,8 +1,6 @@
 package tech.goksi.pterogui.apps;
 
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.goksi.pterogui.frames.MainFrame;
 
 import javax.swing.*;
