@@ -4,8 +4,8 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq {par l {seq {space :p:127:p, comp name:::p:167:p}, seq l {space :::p, comp label1:::p::p, space s:::p, comp servers:::p:152:p}}, space ::161:x}}"
-			"$verticalGroup": "par l {seq l {space :::p, comp name:::p::p, space s:::p, par b {comp label1::b:p::p, comp servers::b:p::p}, space ::184:x}}"
+			"$horizontalGroup": "par l {seq {par l {seq l {space :p:30:p, comp label1:::p::p, space :::p, comp servers:::p:152:p}, seq l {space :p:49:p, comp editBtn:::p:85:p, space :p:51:p, comp massBtn:::p:85:p}, seq l {space :p:68:p, comp name:::p:167:p}}, space ::42:x}}"
+			"$verticalGroup": "par l {seq l {space :p:11:p, comp name:::p::p, space s:::p, par l:::p {comp servers:::::x, comp label1:::::x}, space ::38:x, par l:::p {comp massBtn::::70:x, comp editBtn::::70:x}, space :p:41:p}}"
 		} ) {
 			name: "this"
 			add( new FormComponent( "javax.swing.JLabel" ) {
@@ -29,9 +29,18 @@ new FormModel {
 				name: "label1"
 				"text": "Select your server: "
 			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "editBtn"
+				"text": "<html><center>Edit selected<br>server</center></html>"
+				"actionCommand": "<html>Edit selected<br /><center>server</center></html>"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "massBtn"
+				"text": "<html>Mass<br />action</html>"
+			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 455, 265 )
+			"size": new java.awt.Dimension( 325, 230 )
 		} )
 	}
 }

@@ -22,7 +22,7 @@ public class FirstTimeFrame extends JPanel {
             passwordField1.setText("");
             return;
         }
-        if((!textPane1.getText().contains("http") || !textPane1.getText().contains("https")) && textPane1.getText().length() < 10){
+        if((!textPane1.getText().contains("http") || !textPane1.getText().contains("https")) || textPane1.getText().length() < 10){
             textPane1.setText("");
             JOptionPane.showMessageDialog(this, "Not valid pterodactyl app url!", "Not valid url", JOptionPane.WARNING_MESSAGE);
             return;
@@ -60,31 +60,39 @@ public class FirstTimeFrame extends JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup()
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(30, 30, 30)
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                        .addComponent(appUrlLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(apiKeyLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addContainerGap()
                     .addGroup(layout.createParallelGroup()
-                        .addComponent(button1, GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
-                        .addComponent(textPane1, GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
-                        .addComponent(passwordField1))
-                    .addGap(154, 154, 154))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(appUrlLbl, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(textPane1, GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(apiKeyLbl)
+                            .addGap(4, 4, 4)
+                            .addComponent(passwordField1, GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)))
+                    .addGap(63, 63, 63))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(41, 41, 41)
+                    .addComponent(button1, GroupLayout.PREFERRED_SIZE, 239, GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(45, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup()
                 .addGroup(layout.createSequentialGroup()
                     .addGap(40, 40, 40)
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(apiKeyLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(passwordField1, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
-                    .addGap(52, 52, 52)
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                        .addComponent(appUrlLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(textPane1, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
-                    .addGap(26, 26, 26)
+                        .addComponent(passwordField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup()
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(18, 18, 18)
+                            .addComponent(appUrlLbl, GroupLayout.PREFERRED_SIZE, 49, GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(32, 32, 32)
+                            .addComponent(textPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+                    .addGap(47, 47, 47)
                     .addComponent(button1)
-                    .addContainerGap(12, Short.MAX_VALUE))
+                    .addGap(33, 33, 33))
         );
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
