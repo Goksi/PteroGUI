@@ -67,7 +67,7 @@ public class MainFrame extends JPanel {
                         .addGroup(layout.createSequentialGroup()
                             .addGap(68, 68, 68)
                             .addComponent(name, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)))
-                    .addContainerGap(42, Short.MAX_VALUE))
+                    .addContainerGap(44, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup()
@@ -101,5 +101,13 @@ public class MainFrame extends JPanel {
 
     public JComboBox<String> getServersComboBox(){
         return servers;
+    }
+
+    public JButton getEditBtn() {
+        return editBtn;
+    }
+
+    public JButton getMassBtn() {
+        return massBtn;
     }
 }

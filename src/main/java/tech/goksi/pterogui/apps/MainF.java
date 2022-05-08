@@ -10,6 +10,7 @@ import java.util.Objects;
 
 public class MainF {
     private Map<String, ClientServer> servers;
+    private JFrame mfFrame;
 
     public void init(){
         servers = new HashMap<>();
@@ -37,14 +38,21 @@ public class MainF {
             mf.getServersComboBox().addItem(srv.getName());
             return true;
         });
-
-
-        JFrame mfFrame = new JFrame("PteroGUI | Main");
+        mfFrame = new JFrame("PteroGUI | Main");
         mfFrame.setResizable(false);
         mfFrame.setContentPane(mf);
         mfFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
         mfFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mfFrame.pack();
         mfFrame.setVisible(true);
+        mf.getEditBtn().addActionListener(e ->{
+            ServerSettings ss = new ServerSettings(servers.get(Objects.requireNonNull(mf.getServersComboBox().getSelectedItem()).toString()), this);
+            ss.init();
+            mfFrame.setVisible(false);
+        });
+    }
+
+    public JFrame getMfFrame() {
+        return mfFrame;
     }
 }
