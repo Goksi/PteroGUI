@@ -35,6 +35,10 @@ public class MainF {
                 rmFirst[0] = false;
             }
             servers.put(srv.getName(), srv);
+            if(servers.isEmpty()){
+                mf.getEditBtn().setEnabled(false);
+                mf.getMassBtn().setEnabled(false);
+            }
             mf.getServersComboBox().addItem(srv.getName());
             return true;
         });
@@ -44,6 +48,7 @@ public class MainF {
         mfFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
         mfFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mfFrame.pack();
+        mfFrame.setLocationRelativeTo(null);
         mfFrame.setVisible(true);
         mf.getEditBtn().addActionListener(e ->{
             ServerSettings ss = new ServerSettings(servers.get(Objects.requireNonNull(mf.getServersComboBox().getSelectedItem()).toString()), this);
