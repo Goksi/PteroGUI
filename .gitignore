@@ -39,3 +39,5 @@ build/
 
 data.json
 *.jfd
+*.jfd
+src/main/java/tech/goksi/pterogui/frames/ConsoleForm.jfd
