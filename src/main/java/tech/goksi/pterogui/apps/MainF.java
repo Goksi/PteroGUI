@@ -2,8 +2,11 @@ package tech.goksi.pterogui.apps;
 
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import tech.goksi.pterogui.frames.MainFrame;
+import tech.goksi.pterogui.frames.MassActionDialog;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +53,37 @@ public class MainF {
         mfFrame.pack();
         mfFrame.setLocationRelativeTo(null);
         mfFrame.setVisible(true);
+        mf.getMassBtn().addActionListener(e ->{
+            MassActionDialog mad = new MassActionDialog(mfFrame, mf);
+            mad.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            mad.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    mf.getMassBtn().setEnabled(true);
+                }
+            });
+            mad.setVisible(true);
+            mf.getMassBtn().setEnabled(false);
+            mad.getOkButton().addActionListener(ev -> {
+                int index = mad.getPowerAction().getSelectedIndex();
+                ServerSettings.State state;
+                switch (index){
+                    case 1: state = ServerSettings.State.STOP;
+                            break;
+                    case 2: state = ServerSettings.State.KILL;
+                            break;
+                    case 3: state = ServerSettings.State.RESTART;
+                            break;
+                    default: state = ServerSettings.State.START;
+                }
+                for(Map.Entry<String, ClientServer> srv : servers.entrySet()){
+                    Objects.requireNonNull(ServerSettings.switchState(state, srv.getValue())).executeAsync();
+                }
+                mad.dispose();
+                mf.getMassBtn().setEnabled(true);
+
+            });
+        });
         mf.getEditBtn().addActionListener(e ->{
             ServerSettings ss = new ServerSettings(servers.get(Objects.requireNonNull(mf.getServersComboBox().getSelectedItem()).toString()), this);
             ss.init();

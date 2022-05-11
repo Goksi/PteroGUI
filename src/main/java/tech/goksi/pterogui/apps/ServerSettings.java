@@ -82,16 +82,16 @@ public class ServerSettings {
 
         ssf.getChangeStateBtn().addActionListener(e ->{
             switch (ssf.getStateComboBox().getSelectedIndex()){
-                case 0: Objects.requireNonNull(switchState(State.START)).executeAsync(successful ->
+                case 0: Objects.requireNonNull(switchState(State.START, server)).executeAsync(successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent START signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
                         break;
-                case 1: Objects.requireNonNull(switchState(State.STOP)).executeAsync(successful ->
+                case 1: Objects.requireNonNull(switchState(State.STOP, server)).executeAsync(successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent STOP signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
                         break;
-                case 2: Objects.requireNonNull(switchState(State.KILL)).executeAsync(successful ->
+                case 2: Objects.requireNonNull(switchState(State.KILL, server)).executeAsync(successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent KILL signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
                         break;
-                case 3: Objects.requireNonNull(switchState(State.RESTART)).executeAsync(successful ->
+                case 3: Objects.requireNonNull(switchState(State.RESTART, server)).executeAsync(successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent RESTART signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
             }
                 });
@@ -121,7 +121,7 @@ public class ServerSettings {
 
     }
 
-    private PteroAction<Void> switchState(State state){
+    public static PteroAction<Void> switchState(State state, ClientServer server){
         switch (state){
             case KILL: return server.kill();
             case STOP: return server.stop();
