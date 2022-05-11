@@ -16,6 +16,10 @@ public class MainFrame extends JPanel {
         initComponents();
     }
 
+    public JComboBox<String> getServers() {
+        return servers;
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
