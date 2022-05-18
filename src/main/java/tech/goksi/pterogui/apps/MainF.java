@@ -1,6 +1,8 @@
 package tech.goksi.pterogui.apps;
 
+import com.mattmalec.pterodactyl4j.client.entities.Account;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
+import com.mattmalec.pterodactyl4j.exceptions.LoginException;
 import tech.goksi.pterogui.frames.MainFrame;
 import tech.goksi.pterogui.frames.MassActionDialog;
 
@@ -24,27 +26,22 @@ public class MainF {
             e.printStackTrace();
         }
         MainFrame mf = new MainFrame();
-
-        FirstTime.getInstance().getApi().retrieveAccount().executeAsync(acc ->{
-            mf.getNameLbl().setText("Welcome %name !".replaceAll("%name", acc.getUserName()));
-        }, error ->{
+        Account acc;
+        try{
+            acc = FirstTime.getInstance().getApi().retrieveAccount().execute();
+        }catch (LoginException e){
             JOptionPane.showMessageDialog(mf, "Wrong API key or APP url, delete data.json and try again!", "Critical error", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
-        });
+            return;
+        }
+        mf.getNameLbl().setText("Welcome %name !".replaceAll("%name", acc.getUserName()));
         final boolean[] rmFirst = {true};  //just so i can remove first default item
-        FirstTime.getInstance().getApi().retrieveServers(true).forEachAsync(srv ->{
-            if(rmFirst[0]){
-                mf.getServersComboBox().removeItemAt(0);
-                rmFirst[0] = false;
-            }
-            servers.put(srv.getName(), srv);
-            if(servers.isEmpty()){
-                mf.getEditBtn().setEnabled(false);
-                mf.getMassBtn().setEnabled(false);
-            }
-            mf.getServersComboBox().addItem(srv.getName());
-            return true;
-        });
+        if(acc.isRootAdmin()){
+            FirstTime.getInstance().getApi().retrieveServers(true).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
+        }else {
+            FirstTime.getInstance().getApi().retrieveServers(false).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
+        }
+
         mfFrame = new JFrame("PteroGUI | Main");
         mfFrame.setResizable(false);
         mfFrame.setContentPane(mf);
@@ -89,6 +86,20 @@ public class MainF {
             ss.init();
             mfFrame.setVisible(false);
         });
+    }
+
+    private boolean loadServers(MainFrame mf, boolean[] rmFirst, ClientServer srv) {
+        if(rmFirst[0]){
+            mf.getServersComboBox().removeItemAt(0);
+            rmFirst[0] = false;
+        }
+        servers.put(srv.getName(), srv);
+        if(servers.isEmpty()){
+            mf.getEditBtn().setEnabled(false);
+            mf.getMassBtn().setEnabled(false);
+        }
+        mf.getServersComboBox().addItem(srv.getName());
+        return true;
     }
 
     public JFrame getMfFrame() {
