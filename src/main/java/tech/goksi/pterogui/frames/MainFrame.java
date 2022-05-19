@@ -5,6 +5,7 @@
 package tech.goksi.pterogui.frames;
 
 import java.awt.*;
+import java.util.Objects;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 
@@ -34,7 +35,7 @@ public class MainFrame extends JPanel {
         //---- name ----
         name.setText("Loading...");
         name.setHorizontalAlignment(SwingConstants.CENTER);
-        name.setIcon(new ImageIcon(getClass().getResource("/rsz_pterodactyl.png")));
+        name.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/rsz_pterodactyl.png"))));
         name.setMaximumSize(new Dimension(125, 32));
         name.setPreferredSize(new Dimension(125, 32));
         name.setMinimumSize(new Dimension(125, 32));
