@@ -52,6 +52,7 @@ public class MainF {
         mfFrame.setVisible(true);
         mf.getMassBtn().addActionListener(e ->{
             MassActionDialog mad = new MassActionDialog(mfFrame, mf);
+            mad.setResizable(false);
             mad.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             mad.addWindowListener(new WindowAdapter() {
                 @Override
