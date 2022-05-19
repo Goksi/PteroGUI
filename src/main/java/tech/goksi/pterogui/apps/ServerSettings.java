@@ -52,6 +52,7 @@ public class ServerSettings {
             ssf.getConsoleBtn().setEnabled(false);
             ssf.getChangeStateBtn().setEnabled(false);
             ssf.getStateComboBox().setEnabled(false);
+            ssf.getMemoryUsageLbl().setText("Memory usage: SUSPENDED");
         }
         /*making whole console frame here*/
         ssf.getConsoleBtn().addActionListener(e ->{
