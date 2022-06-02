@@ -4,6 +4,7 @@ import com.mattmalec.pterodactyl4j.PteroAction;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
 import tech.goksi.pterogui.frames.ConsoleForm;
+import tech.goksi.pterogui.frames.FileManagerUI;
 import tech.goksi.pterogui.frames.ServerSettingsFrame;
 
 import javax.swing.*;
@@ -54,6 +55,29 @@ public class ServerSettings {
             ssf.getStateComboBox().setEnabled(false);
             ssf.getMemoryUsageLbl().setText("Memory usage: SUSPENDED");
         }
+        /*file manager*/
+        ssf.getFileManagerButton().addActionListener(e -> {
+            JFrame fileManagerFrame = new JFrame("PteroGUI | FileManager");
+            FileManagerUI fmUI = new FileManagerUI();
+            ssf.getFileManagerButton().setEnabled(false);
+            FileManager fileManager = new FileManager(fmUI.getTree1(), server);
+            fileManager.updateUI();
+            fileManagerFrame.setSize(500,340);
+            fileManagerFrame.setContentPane(fmUI);
+            fileManagerFrame.setResizable(false);
+            fileManagerFrame.setVisible(true);
+            fileManagerFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
+            fileManagerFrame.setLocationRelativeTo(ssf);
+
+
+            fileManagerFrame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    ssf.getFileManagerButton().setEnabled(true);
+                }
+            });
+
+        });
         /*making whole console frame here*/
         ssf.getConsoleBtn().addActionListener(e ->{
             ssf.getConsoleBtn().setEnabled(false);
