@@ -64,7 +64,7 @@ public class ServerSettings {
             FileManagerUI fmUI = new FileManagerUI();
             ssf.getFileManagerButton().setEnabled(false);
             FileManager fileManager = new FileManager(fmUI.getTree1(), server);
-            fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1()));
+            fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1(), fileManager));
             fileManager.updateUI();
             fileManagerFrame.setSize(500,340);
             fileManagerFrame.setContentPane(fmUI);

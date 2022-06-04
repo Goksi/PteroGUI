@@ -1,5 +1,7 @@
 package tech.goksi.pterogui.events;
 
+import tech.goksi.pterogui.apps.FileManager;
+
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.event.MouseEvent;
@@ -7,8 +9,10 @@ import java.awt.event.MouseListener;
 
 public class ClickEvent implements MouseListener {
     private final JTree tree;
-    public ClickEvent(JTree tree){
+    private final FileManager fm;
+    public ClickEvent(JTree tree, FileManager fm){
         this.tree = tree;
+        this.fm = fm;
     }
 
     @Override
@@ -22,7 +26,7 @@ public class ClickEvent implements MouseListener {
         }else if(e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0){
             /*otvara fajl na dupli klik*/
             e.consume();
-            System.out.println("A");
+            fm.open();
         }
 
 
