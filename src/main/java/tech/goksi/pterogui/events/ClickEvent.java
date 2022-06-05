@@ -24,7 +24,6 @@ public class ClickEvent implements MouseListener {
             tree.setSelectionPath(clickedPath);
             System.out.println("B");
         }else if(e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0){
-            /*otvara fajl na dupli klik*/
             e.consume();
             fm.open();
         }
