@@ -1,17 +1,17 @@
 package tech.goksi.pterogui.apps;
 
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
+import com.mattmalec.pterodactyl4j.client.entities.File;
 import com.mattmalec.pterodactyl4j.client.entities.GenericFile;
+import tech.goksi.pterogui.frames.FileEditPanel;
 
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,8 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 public class FileManager {
     public static boolean STOP_RECURSIVE = false;  //really can't think of another way rn
-    private final String[] textFiles = {"json", "txt", "yml", "yaml", "java", "tex", "js", "md", "py", "bat"};
     private static final Map<ClientServer, DefaultTreeModel> nodesCache = new HashMap<>();
+    private Map<String, File> files = new HashMap<>();
+    /*probably will also save all files and remove them on windows close event*/
     private final JTree tree;
     private final ClientServer server ;
     public FileManager(JTree tree, ClientServer server){
@@ -28,6 +29,9 @@ public class FileManager {
         this.server = server;
     }
 
+    public Map<String, File> getFiles() {
+        return files;
+    }
 
     public void updateUI(){
         DefaultTreeModel model;
@@ -48,7 +52,7 @@ public class FileManager {
     }
    /*problem ako se izadje dok fajlovi nisu skroz ucitani*/
     private void updateFiles(GenericFile file, DefaultMutableTreeNode lastNode){
-        if(STOP_RECURSIVE) return; //little faster, but it still freezes (probably make it sync)
+        if(STOP_RECURSIVE) return; //nez jebe i dalje ako se sve ne ucita, a to je bas problem ako je neka nodejs aplikacija
         if(!file.isFile()){
             DefaultMutableTreeNode dir;
             if(!Objects.equals(file.getName(), "Root Directory")){
@@ -60,13 +64,12 @@ public class FileManager {
                 if(!Objects.equals(subFolder.getName(), file.getName())){
                     dir.add(new DefaultMutableTreeNode(subFolder.getName()));
                 }
-                subFolder.getFiles().forEach(files -> {
-                    updateFiles(files, dir);
-                });
+                subFolder.getFiles().forEach(files -> updateFiles(files, dir));
             });
             if(!Objects.equals(dir, lastNode)) lastNode.add(dir);
         }else {
             lastNode.add(new DefaultMutableTreeNode(file.getName()));
+            files.put(file.getPath(), (File) file);
         }
     }
 
@@ -79,7 +82,17 @@ public class FileManager {
         for(int i = 1; i<path.length; i++){
             sb.append(path[i]).append("/");
         }
-
+        String finalS = sb.substring(0, sb.length() - 1);
+        File file = files.get(finalS);
+        JFrame fileEdit = new JFrame("PteroGUI | " + file.getName() );
+        FileEditPanel fep = new FileEditPanel();
+        fep.getTextArea1().setText(file.retrieveContent().execute());
+        fileEdit.setContentPane(fep);
+        fileEdit.setResizable(false);
+        fileEdit.pack();
+        fileEdit.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
+        fileEdit.setLocationRelativeTo(tree);
+        fileEdit.setVisible(true);
     }
-    /*TODO: metode za otvaranje, i brisanje fajla*/
+    /*TODO: brisanje fajla*/
 }
