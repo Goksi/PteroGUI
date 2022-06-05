@@ -3,7 +3,9 @@ package tech.goksi.pterogui.apps;
 import com.mattmalec.pterodactyl4j.PteroAction;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 
+import com.mattmalec.pterodactyl4j.client.entities.Utilization;
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
+import com.mattmalec.pterodactyl4j.utils.LockUtils;
 import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.frames.ConsoleForm;
 import tech.goksi.pterogui.frames.FileManagerUI;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerSettings {
     private final ClientServer server;
     private final MainF mainForm;
+    private Utilization utilization;
     private ScheduledExecutorService executorService;
     public ServerSettings(ClientServer server, MainF mainForm){
         this.server = server;
@@ -37,6 +40,7 @@ public class ServerSettings {
         ServerSettingsFrame ssf = new ServerSettingsFrame();
         if(!server.isSuspended()){
             executorService = Executors.newSingleThreadScheduledExecutor();
+            /*make this sync ? doesn't fix*/
             executorService.scheduleAtFixedRate(()->{
                 server.retrieveUtilization().executeAsync(utilization -> {
                     ssf.getServerInfoLabel().setText(ssf.getServerInfoLabel().getText().replaceAll("%name", server.getName()).replaceAll("%id", server.getIdentifier())
@@ -46,7 +50,7 @@ public class ServerSettings {
                     ssf.getMemoryUsageLbl().setText("Memory usage: %u / %a MB".replaceAll("%a", server.getLimits().getMemory()).
                             replaceAll("%u", String.format("%.2f", (float)utilization.getMemory()/ 1024F / 1024F)));
                 });
-            }, 0, 5, TimeUnit.SECONDS);
+            }, 0, 15, TimeUnit.SECONDS);
 
         }else{
             ssf.getServerInfoLabel().setText(ssf.getServerInfoLabel().getText().replaceAll("%name", server.getName()).replaceAll("%id", server.getIdentifier())
@@ -79,6 +83,8 @@ public class ServerSettings {
                 public void windowClosing(WindowEvent e) {
                     ssf.getFileManagerButton().setEnabled(true);
                     FileManager.STOP_RECURSIVE = true;
+                    fileManager.getFiles().clear();
+
                 }
             });
 
