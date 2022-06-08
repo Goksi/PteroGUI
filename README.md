@@ -5,5 +5,6 @@ First time setup is quite easy, all you have to do is to type your Pterodactyl u
 
 ![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/976766856197193778/unknown.png)
 ## Some screenshots 
-![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/976768731717976124/unknown.png) ![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/976769094059720724/unknown.png)
-![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/976769911739281418/unknown.png)
+![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/984121149896134706/rsz_unknown.png) 
+![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/984123373741301850/rsz_ide.png)  
+![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/984121571209793646/rsz_11unknown.png) ![PteroGUI](https://cdn.discordapp.com/attachments/976766831182368768/984123639127506975/rsz_41unknown.png)
