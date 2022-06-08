@@ -7,6 +7,8 @@ import tech.goksi.pterogui.frames.FileEditPanel;
 
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.HashMap;
@@ -20,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 public class FileManager {
     public static boolean STOP_RECURSIVE = false;  //really can't think of another way rn
     private static final Map<ClientServer, DefaultTreeModel> nodesCache = new HashMap<>();
+    private boolean edited = false;
+    private File currentFile;
+    private FileEditPanel fep;
     private Map<String, File> files = new HashMap<>();
     /*probably will also save all files and remove them on windows close event*/
     private final JTree tree;
@@ -69,7 +74,7 @@ public class FileManager {
             if(!Objects.equals(dir, lastNode)) lastNode.add(dir);
         }else {
             lastNode.add(new DefaultMutableTreeNode(file.getName()));
-            files.put(file.getPath(), (File) file);
+            files.put(file.getPath(), (File) file); //problem, null pointer
         }
     }
 
@@ -84,9 +89,39 @@ public class FileManager {
         }
         String finalS = sb.substring(0, sb.length() - 1);
         File file = files.get(finalS);
+        currentFile = file;
         JFrame fileEdit = new JFrame("PteroGUI | " + file.getName() );
-        FileEditPanel fep = new FileEditPanel();
-        fep.getTextArea1().setText(file.retrieveContent().execute());
+        fep = new FileEditPanel();
+        fep.getButton2().addActionListener(e -> fileEdit.dispose());
+        fep.getButton1().addActionListener(e -> save(fileEdit));
+        String content = file.retrieveContent().execute();
+        fep.getTextArea1().getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                check();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                check();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+            }
+
+            private void check(){
+                if(!(content.equals(fep.getTextArea1().getText())) ){
+                    fileEdit.setTitle("PteroGUI | " +"*" +file.getName());
+                    edited = true;
+                }else {
+                    fileEdit.setTitle("PteroGUI | "  +file.getName());
+                    edited = false;
+                }
+            }
+        });
+        fep.getTextArea1().setText(content);
         fileEdit.setContentPane(fep);
         fileEdit.setResizable(false);
         fileEdit.pack();
@@ -94,5 +129,12 @@ public class FileManager {
         fileEdit.setLocationRelativeTo(tree);
         fileEdit.setVisible(true);
     }
+    private void save(JFrame jframe){
+        if(edited){
+            server.getFileManager().write(currentFile, fep.getTextArea1().getText()).execute();
+            jframe.dispose();
+        }
+    }
+
     /*TODO: brisanje fajla*/
 }
