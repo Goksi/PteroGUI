@@ -34,9 +34,7 @@ public class MassActionDialog extends JDialog {
         return comboBox1;
     }
 
-    private void ok(ActionEvent e) {
-        // TODO add your code here
-    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -95,14 +93,13 @@ public class MassActionDialog extends JDialog {
 
                 //---- okButton ----
                 okButton.setText("OK");
-                okButton.addActionListener(e -> ok(e));
                 buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 5), 0, 0));
 
                 //---- cancelButton ----
                 cancelButton.setText("Cancel");
-                cancelButton.addActionListener(e -> cancel(e));
+                cancelButton.addActionListener(this::cancel);
                 buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));

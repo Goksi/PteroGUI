@@ -2,8 +2,13 @@ package tech.goksi.pterogui.apps;
 
 import com.mattmalec.pterodactyl4j.PteroAction;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
+
+import com.mattmalec.pterodactyl4j.client.entities.Utilization;
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
+import com.mattmalec.pterodactyl4j.utils.LockUtils;
+import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.frames.ConsoleForm;
+import tech.goksi.pterogui.frames.FileManagerUI;
 import tech.goksi.pterogui.frames.ServerSettingsFrame;
 
 import javax.swing.*;
@@ -17,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerSettings {
     private final ClientServer server;
     private final MainF mainForm;
+    private Utilization utilization;
     private ScheduledExecutorService executorService;
     public ServerSettings(ClientServer server, MainF mainForm){
         this.server = server;
@@ -34,6 +40,7 @@ public class ServerSettings {
         ServerSettingsFrame ssf = new ServerSettingsFrame();
         if(!server.isSuspended()){
             executorService = Executors.newSingleThreadScheduledExecutor();
+            /*make this sync ? doesn't fix*/
             executorService.scheduleAtFixedRate(()->{
                 server.retrieveUtilization().executeAsync(utilization -> {
                     ssf.getServerInfoLabel().setText(ssf.getServerInfoLabel().getText().replaceAll("%name", server.getName()).replaceAll("%id", server.getIdentifier())
@@ -43,7 +50,7 @@ public class ServerSettings {
                     ssf.getMemoryUsageLbl().setText("Memory usage: %u / %a MB".replaceAll("%a", server.getLimits().getMemory()).
                             replaceAll("%u", String.format("%.2f", (float)utilization.getMemory()/ 1024F / 1024F)));
                 });
-            }, 0, 5, TimeUnit.SECONDS);
+            }, 0, 15, TimeUnit.SECONDS);
 
         }else{
             ssf.getServerInfoLabel().setText(ssf.getServerInfoLabel().getText().replaceAll("%name", server.getName()).replaceAll("%id", server.getIdentifier())
@@ -54,6 +61,34 @@ public class ServerSettings {
             ssf.getStateComboBox().setEnabled(false);
             ssf.getMemoryUsageLbl().setText("Memory usage: SUSPENDED");
         }
+        /*file manager*/
+        ssf.getFileManagerButton().addActionListener(e -> {
+            FileManager.STOP_RECURSIVE = false;
+            JFrame fileManagerFrame = new JFrame("PteroGUI | FileManager");
+            FileManagerUI fmUI = new FileManagerUI();
+            ssf.getFileManagerButton().setEnabled(false);
+            FileManager fileManager = new FileManager(fmUI.getTree1(), server);
+            fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1(), fileManager));
+            fileManager.updateUI();
+            fileManagerFrame.setSize(500,340);
+            fileManagerFrame.setContentPane(fmUI);
+            fileManagerFrame.setResizable(false);
+            fileManagerFrame.setVisible(true);
+            fileManagerFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
+            fileManagerFrame.setLocationRelativeTo(ssf);
+
+
+            fileManagerFrame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    ssf.getFileManagerButton().setEnabled(true);
+                    FileManager.STOP_RECURSIVE = true;
+                    fileManager.getFiles().clear();
+
+                }
+            });
+
+        });
         /*making whole console frame here*/
         ssf.getConsoleBtn().addActionListener(e ->{
             ssf.getConsoleBtn().setEnabled(false);
