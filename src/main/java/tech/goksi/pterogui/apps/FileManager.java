@@ -25,8 +25,8 @@ public class FileManager {
     private boolean edited = false;
     private File currentFile;
     private FileEditPanel fep;
-    private Map<String, File> files = new HashMap<>();
-    /*probably will also save all files and remove them on windows close event*/
+    private Map<String, File> files = new HashMap<>(); //npe
+    private static String NON_READABLE[] = {"sqlite", "jar", "exe", "db"};
     private final JTree tree;
     private final ClientServer server ;
     public FileManager(JTree tree, ClientServer server){
