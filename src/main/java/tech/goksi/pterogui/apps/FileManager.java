@@ -11,9 +11,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +24,7 @@ public class FileManager {
     private File currentFile;
     private FileEditPanel fep;
     private Map<String, File> files = new HashMap<>(); //npe
-    private static String NON_READABLE[] = {"sqlite", "jar", "exe", "db"};
+    private static List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db");
     private final JTree tree;
     private final ClientServer server ;
     public FileManager(JTree tree, ClientServer server){
@@ -89,6 +87,7 @@ public class FileManager {
         }
         String finalS = sb.substring(0, sb.length() - 1);
         File file = files.get(finalS);
+        if(NON_READABLE.contains(file.getName().split("\\.")[1])) return;
         currentFile = file;
         JFrame fileEdit = new JFrame("PteroGUI | " + file.getName() );
         fep = new FileEditPanel();
