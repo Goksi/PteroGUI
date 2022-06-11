@@ -3,11 +3,11 @@ package tech.goksi.pterogui.apps;
 import com.mattmalec.pterodactyl4j.PteroAction;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 
-import com.mattmalec.pterodactyl4j.client.entities.Utilization;
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
 import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.frames.ConsoleForm;
 import tech.goksi.pterogui.frames.FileManagerUI;
+import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.ServerSettingsFrame;
 
 import javax.swing.*;
@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 public class ServerSettings {
     private final ClientServer server;
     private final MainF mainForm;
-    private Utilization utilization;
     private ScheduledExecutorService executorService;
     public ServerSettings(ClientServer server, MainF mainForm){
         this.server = server;
@@ -35,8 +34,9 @@ public class ServerSettings {
     }
 
     public void init(){
-        JFrame jFrame = new JFrame("PteroGUI | " + server.getIdentifier());
+
         ServerSettingsFrame ssf = new ServerSettingsFrame();
+        GenericFrame jFrame = new GenericFrame("PteroGUI | " + server.getIdentifier(), ssf, mainForm.getMfFrame());
         if(!server.isSuspended()){
             executorService = Executors.newSingleThreadScheduledExecutor();
             /*make this sync ? doesn't fix*/
@@ -63,20 +63,14 @@ public class ServerSettings {
         /*file manager*/
         ssf.getFileManagerButton().addActionListener(e -> {
             FileManager.STOP_RECURSIVE = false;
-            JFrame fileManagerFrame = new JFrame("PteroGUI | FileManager");
             FileManagerUI fmUI = new FileManagerUI();
+            GenericFrame fileManagerFrame = new GenericFrame("PteroGUI | FileManager", fmUI, ssf);
             ssf.getFileManagerButton().setEnabled(false);
             fmUI.getTree1().setComponentPopupMenu(new ContextMenu());
             FileManager fileManager = new FileManager(fmUI.getTree1(), server);
             fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1(), fileManager));
             fileManager.updateUI();
-            fileManagerFrame.setSize(500,340);
-            fileManagerFrame.setContentPane(fmUI);
-            fileManagerFrame.setResizable(false);
             fileManagerFrame.setVisible(true);
-            fileManagerFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
-            fileManagerFrame.setLocationRelativeTo(ssf);
-
 
             fileManagerFrame.addWindowListener(new WindowAdapter() {
                 @Override
@@ -92,13 +86,9 @@ public class ServerSettings {
         /*making whole console frame here*/
         ssf.getConsoleBtn().addActionListener(e ->{
             ssf.getConsoleBtn().setEnabled(false);
-            JFrame console = new JFrame("PteroGUI | Console");
             ConsoleForm cf = new ConsoleForm();
-            console.setContentPane(cf);
-            console.setResizable(false);
-            console.pack();
+            GenericFrame console = new GenericFrame("PteroGUI | Console", cf, null);
             console.setVisible(true);
-            console.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
             WebSocketManager wss = server.getWebSocketBuilder().addEventListeners(new Websocket(cf.getConsoleTxt())).build();
             cf.getCommandBtn().addActionListener(event -> {
                 if(cf.getCommandTxt().getText().length() < 2) JOptionPane.showMessageDialog(cf, "Command can't be that short!", "Invalid command", JOptionPane.WARNING_MESSAGE);
@@ -137,11 +127,7 @@ public class ServerSettings {
 
 
 
-        jFrame.setContentPane(ssf);
-        jFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
-        jFrame.setResizable(false);
-        jFrame.pack();
-        jFrame.setLocationRelativeTo(mainForm.getMfFrame());
+
         jFrame.setVisible(true);
 
 

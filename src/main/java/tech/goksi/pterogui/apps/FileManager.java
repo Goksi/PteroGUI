@@ -4,6 +4,7 @@ import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.File;
 import com.mattmalec.pterodactyl4j.client.entities.GenericFile;
 import tech.goksi.pterogui.frames.FileEditPanel;
+import tech.goksi.pterogui.frames.GenericFrame;
 
 
 import javax.swing.*;
@@ -76,7 +77,7 @@ public class FileManager {
         }
     }
 
-    public void open(){
+    public void openFile(){
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         rawPath = rawPath.substring(1, rawPath.length() - 1);
         String[] path = rawPath.replaceAll(" ", "").split(",");
@@ -89,8 +90,8 @@ public class FileManager {
         File file = files.get(finalS);
         if(NON_READABLE.contains(file.getName().split("\\.")[1])) return;
         currentFile = file;
-        JFrame fileEdit = new JFrame("PteroGUI | " + file.getName() );
         fep = new FileEditPanel();
+        GenericFrame fileEdit = new GenericFrame("PteroGUI | " + file.getName(), fep, tree);
         fep.getButton2().addActionListener(e -> fileEdit.dispose());
         fep.getButton1().addActionListener(e -> save(fileEdit));
         String content = file.retrieveContent().execute();
@@ -121,11 +122,6 @@ public class FileManager {
             }
         });
         fep.getTextArea1().setText(content);
-        fileEdit.setContentPane(fep);
-        fileEdit.setResizable(false);
-        fileEdit.pack();
-        fileEdit.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
-        fileEdit.setLocationRelativeTo(tree);
         fileEdit.setVisible(true);
     }
     private void save(JFrame jframe){

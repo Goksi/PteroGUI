@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.goksi.pterogui.data.Data;
 import tech.goksi.pterogui.frames.FirstTimeFrame;
+import tech.goksi.pterogui.frames.GenericFrame;
 
 import javax.swing.*;
-import java.util.Objects;
 
 public class FirstTime {
     private Data data;
@@ -30,12 +30,8 @@ public class FirstTime {
         /*firs time panel */
         if(data.getApiKey().equals("Your api token here") || data.getAppUrl().equals("Your pterodactyl panel url here")){
             FirstTimeFrame ft = new FirstTimeFrame();
-            JFrame firstTimeFrame = new JFrame("PteroGUI | First time setup");
-            firstTimeFrame.setResizable(false);
-            firstTimeFrame.setContentPane(ft);
-            firstTimeFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
+            GenericFrame firstTimeFrame = new GenericFrame("PteroGUI | First time setup", ft, null);
             firstTimeFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            firstTimeFrame.pack();
             firstTimeFrame.setVisible(true);
             synchronized (ft.getButton1()){
                 try{
