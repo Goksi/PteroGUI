@@ -5,7 +5,6 @@ import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 
 import com.mattmalec.pterodactyl4j.client.entities.Utilization;
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
-import com.mattmalec.pterodactyl4j.utils.LockUtils;
 import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.frames.ConsoleForm;
 import tech.goksi.pterogui.frames.FileManagerUI;
@@ -67,6 +66,7 @@ public class ServerSettings {
             JFrame fileManagerFrame = new JFrame("PteroGUI | FileManager");
             FileManagerUI fmUI = new FileManagerUI();
             ssf.getFileManagerButton().setEnabled(false);
+            fmUI.getTree1().setComponentPopupMenu(new ContextMenu());
             FileManager fileManager = new FileManager(fmUI.getTree1(), server);
             fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1(), fileManager));
             fileManager.updateUI();

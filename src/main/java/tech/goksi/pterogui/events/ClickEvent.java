@@ -1,5 +1,6 @@
 package tech.goksi.pterogui.events;
 
+import tech.goksi.pterogui.apps.ContextMenu;
 import tech.goksi.pterogui.apps.FileManager;
 
 import javax.swing.*;
@@ -17,18 +18,20 @@ public class ClickEvent implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if(e.getComponent() instanceof ContextMenu){
+
+        }else {
+
         if(SwingUtilities.isRightMouseButton(e)){
             /*otvara context menu na desni klil*/
             TreePath clickedPath = tree.getPathForLocation(e.getX(), e.getY());
             if(clickedPath == null) return;
             tree.setSelectionPath(clickedPath);
-            System.out.println("B");
         }else if(e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0){
             e.consume();
             fm.open();
         }
-
-
+}
 
     }
 
