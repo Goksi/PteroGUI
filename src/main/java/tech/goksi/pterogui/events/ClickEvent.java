@@ -17,9 +17,7 @@ public class ClickEvent implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getComponent() instanceof ContextMenu){
-
-        } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0) {
             e.consume();
             fm.openFile();
         }
