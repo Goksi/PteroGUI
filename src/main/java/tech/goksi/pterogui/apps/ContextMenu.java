@@ -1,13 +1,26 @@
 package tech.goksi.pterogui.apps;
 
+import tech.goksi.pterogui.events.ContextMenuEvent;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class ContextMenu extends JPopupMenu {
-    public ContextMenu(){
+    public ContextMenu(FileManager fileManager){
         super("Edit");
-        add(new JMenuItem("Open"));
-        add(new JMenuItem("Delete"));
+        ContextMenuEvent e = new ContextMenuEvent(fileManager);
+        JMenuItem open = new JMenuItem("Open");
+        open.addActionListener(e);
+        JMenuItem delete = new JMenuItem("Delete");
+        delete.addActionListener(e);
+        JMenuItem copy = new JMenuItem("Copy");
+        copy.addActionListener(e);
+        JMenuItem paste = new JMenuItem("Paste");
+        paste.addActionListener(e);
+        add(open);
+        add(delete);
+        add(copy);
+        add(paste);
     }
     @Override
     public void show(final Component comp, final int x, final int y){

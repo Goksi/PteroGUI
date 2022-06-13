@@ -66,8 +66,9 @@ public class ServerSettings {
             FileManagerUI fmUI = new FileManagerUI();
             GenericFrame fileManagerFrame = new GenericFrame("PteroGUI | FileManager", fmUI, ssf);
             ssf.getFileManagerButton().setEnabled(false);
-            fmUI.getTree1().setComponentPopupMenu(new ContextMenu());
             FileManager fileManager = new FileManager(fmUI.getTree1(), server);
+            ContextMenu contextMenu = new ContextMenu(fileManager);
+            fmUI.getTree1().setComponentPopupMenu(contextMenu);
             fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1(), fileManager));
             fileManager.updateUI();
             fileManagerFrame.setVisible(true);
@@ -77,7 +78,7 @@ public class ServerSettings {
                 public void windowClosing(WindowEvent e) {
                     ssf.getFileManagerButton().setEnabled(true);
                     FileManager.STOP_RECURSIVE = true;
-                    fileManager.getFiles().clear();
+                    //fileManager.getFilesCache().clear();
 
                 }
             });
