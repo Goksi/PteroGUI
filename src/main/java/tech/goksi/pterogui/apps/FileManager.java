@@ -13,6 +13,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -21,6 +22,7 @@ public class FileManager {
     private static final Map<ClientServer, DefaultTreeModel> nodesCache = new HashMap<>();
     private boolean edited = false;
     private File currentFile;
+    private File clipboard;
     private FileEditPanel fep;
     private static final List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db", "mp3");
     private final JTree tree;
@@ -129,5 +131,22 @@ public class FileManager {
         Directory dir = server.retrieveDirectory(finalS).execute();
         return (File) dir.getFiles().stream().filter(file -> file.getName().equals(path[path.length-1])).findFirst().orElse(null);
     }
+
+    public void copy(){
+        String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
+        File file = getFileFromPath(rawPath);
+        clipboard = file;
+    }
+    public void paste(){
+        if(clipboard != null){
+            File selectedOne = getFileFromPath(Objects.requireNonNull(tree.getSelectionPath()).toString());
+            String dirToPaste = selectedOne.getPath().replaceAll(selectedOne.getName(), "");
+            System.out.println(dirToPaste);
+            String contentToWrite = clipboard.retrieveContent().execute();
+            server.getFileManager().upload(server.retrieveDirectory(dirToPaste).execute()).addFile(contentToWrite.getBytes(StandardCharsets.UTF_8), clipboard.getName()); //testirati
+        }
+    }
+
+
 
 }

@@ -18,6 +18,10 @@ public class ContextMenuEvent implements ActionListener {
                 fm.openFile();
             }else if(e.getActionCommand().equals("Delete")){
                 fm.delete();
+            }else if(e.getActionCommand().equals("Copy")){
+                fm.copy();
+            } else if (e.getActionCommand().equals("Paste")) {
+                fm.paste();
             }
         }
     }
