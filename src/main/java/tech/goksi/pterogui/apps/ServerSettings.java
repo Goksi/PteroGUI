@@ -11,6 +11,7 @@ import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.ServerSettingsFrame;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Objects;

@@ -13,7 +13,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -32,7 +31,6 @@ public class FileManager {
         this.server = server;
     }
 
-
     public void updateUI(){
         DefaultTreeModel model;
         if(nodesCache.containsKey(server)){
@@ -46,12 +44,13 @@ public class FileManager {
         tree.setModel(model);
 
     }
-   /*problem ako se izadje dok fajlovi nisu skroz ucitani*/
+
+   /*TODO: fix thread blocking*/
     private void updateFiles(GenericFile file, DefaultMutableTreeNode lastNode){
         if(STOP_RECURSIVE) return; //nez jebe i dalje ako se sve ne ucita, a to je bas problem ako je neka nodejs aplikacija
         if(!file.isFile()){
             DefaultMutableTreeNode dir;
-            if(!Objects.equals(file.getName(), "Root Directory")){
+            if(!file.getName().equals("Root Directory")){
                 dir = new DefaultMutableTreeNode(file.getName());
             }else {
                 dir = lastNode;
@@ -71,7 +70,7 @@ public class FileManager {
     public void openFile(){
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         File file = getFileFromPath(rawPath);
-        if(NON_READABLE.contains(file.getName().split("\\.")[1])) return; //aob exception ako nema ekstenziju
+        if(!file.isFile() || NON_READABLE.contains(file.getName().split("\\.")[1])) return;
         currentFile = file;
         fep = new FileEditPanel();
         GenericFrame fileEdit = new GenericFrame("PteroGUI | " + file.getName(), fep, tree);
@@ -107,18 +106,21 @@ public class FileManager {
         fep.getTextArea1().setText(content);
         fileEdit.setVisible(true);
     }
+
     private void save(JFrame jframe){
         if(edited){
             server.getFileManager().write(currentFile, fep.getTextArea1().getText()).execute();
             jframe.dispose();
         }
     }
+
     public void delete(){
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         ((DefaultTreeModel) tree.getModel()).removeNodeFromParent((DefaultMutableTreeNode)tree.getLastSelectedPathComponent());
         File file = getFileFromPath(rawPath);
         file.delete().execute();
     }
+
     private File getFileFromPath(String rawPath){
         rawPath = rawPath.substring(1, rawPath.length() - 1);
         String[] path = rawPath.replaceAll(" ", "").split(",");
@@ -134,19 +136,27 @@ public class FileManager {
 
     public void copy(){
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
-        File file = getFileFromPath(rawPath);
-        clipboard = file;
+        clipboard = getFileFromPath(rawPath);
     }
+
     public void paste(){
         if(clipboard != null){
             File selectedOne = getFileFromPath(Objects.requireNonNull(tree.getSelectionPath()).toString());
+            ((DefaultMutableTreeNode) tree.getSelectionPath().getParentPath().getLastPathComponent()).add(new DefaultMutableTreeNode(clipboard.getName())); // ne reloada tree nakon dodavanja node-a
+            ((DefaultTreeModel) tree.getModel()).reload();;
             String dirToPaste = selectedOne.getPath().replaceAll(selectedOne.getName(), "");
-            System.out.println(dirToPaste);
-            String contentToWrite = clipboard.retrieveContent().execute();
-            server.getFileManager().upload(server.retrieveDirectory(dirToPaste).execute()).addFile(contentToWrite.getBytes(StandardCharsets.UTF_8), clipboard.getName()); //testirati
+            String clipboardDir = clipboard.getPath().replaceAll(clipboard.getName(), "");
+            clipboard.copy().execute();
+            clipboard.rename(dirToPaste + clipboard.getName()).execute();
+            server.retrieveDirectory(clipboardDir).executeAsync(dir -> {
+                for(GenericFile file : dir.getFiles()){
+                    if(file.getName().contains(clipboard.getName().split("\\.")[0]) && !dirToPaste.equals(clipboardDir)){
+                        file.rename(clipboard.getPath()).execute();
+                        break;
+                    }
+                }
+            });
+
         }
     }
-
-
-
 }
