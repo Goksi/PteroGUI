@@ -15,11 +15,14 @@ public class ContextMenu extends JPopupMenu {
         delete.addActionListener(e);
         JMenuItem copy = new JMenuItem("Copy");
         copy.addActionListener(e);
+        JMenuItem cut = new JMenuItem("Cut");
+        cut.addActionListener(e);
         JMenuItem paste = new JMenuItem("Paste");
         paste.addActionListener(e);
         add(open);
         add(delete);
         add(copy);
+        add(cut);
         add(paste);
     }
     @Override
