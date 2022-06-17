@@ -22,6 +22,8 @@ public class ContextMenuEvent implements ActionListener {
                 fm.copy();
             } else if (e.getActionCommand().equals("Paste")) {
                 fm.paste();
+            }else if (e.getActionCommand().equals("Cut")){
+                fm.cut();
             }
         }
     }

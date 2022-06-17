@@ -20,6 +20,8 @@ public class FileManager {
     public static boolean STOP_RECURSIVE = false;  //really can't think of another way rn
     private static final Map<ClientServer, DefaultTreeModel> nodesCache = new HashMap<>();
     private boolean edited = false;
+    private boolean cut = false;
+    private DefaultMutableTreeNode cuttedNode;
     private File currentFile;
     private File clipboard;
     private FileEditPanel fep;
@@ -45,7 +47,7 @@ public class FileManager {
 
     }
 
-   /*TODO: fix thread blocking*/
+   /*TODO: fix thread blocking, maybe load up to 2 levels and rest after tree expand event*/
     private void updateFiles(GenericFile file, DefaultMutableTreeNode lastNode){
         if(STOP_RECURSIVE) return; //nez jebe i dalje ako se sve ne ucita, a to je bas problem ako je neka nodejs aplikacija
         if(!file.isFile()){
@@ -138,6 +140,11 @@ public class FileManager {
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         clipboard = getFileFromPath(rawPath);
     }
+    public void cut(){
+        copy();
+        cut = true;
+        cuttedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+    }
 
     public void paste(){
         if(clipboard != null){
@@ -151,7 +158,14 @@ public class FileManager {
             server.retrieveDirectory(clipboardDir).executeAsync(dir -> {
                 for(GenericFile file : dir.getFiles()){
                     if(file.getName().contains(clipboard.getName().split("\\.")[0]) && !dirToPaste.equals(clipboardDir)){
-                        file.rename(clipboard.getPath()).execute();
+                        if(cut){
+                            file.delete().execute();
+                            ((DefaultTreeModel) tree.getModel()).removeNodeFromParent(cuttedNode);
+                            cuttedNode = null;
+                            cut = false;
+                        }else {
+                            file.rename(clipboard.getPath()).execute();
+                        }
                         break;
                     }
                 }
