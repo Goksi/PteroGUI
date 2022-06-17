@@ -3,6 +3,7 @@ package tech.goksi.pterogui.apps;
 import com.mattmalec.pterodactyl4j.client.entities.Account;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.exceptions.LoginException;
+import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.MainFrame;
 import tech.goksi.pterogui.frames.MassActionDialog;
 
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 public class MainF {
     private Map<String, ClientServer> servers;
-    private JFrame mfFrame;
+    private GenericFrame mfFrame;
 
     public void init(){
         servers = new HashMap<>();
@@ -42,14 +43,9 @@ public class MainF {
             FirstTime.getInstance().getApi().retrieveServers(false).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
         }
 
-        mfFrame = new JFrame("PteroGUI | Main");
-        mfFrame.setResizable(false);
-        mfFrame.setContentPane(mf);
-        mfFrame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/cool.png"))).getImage());
-        mfFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        mfFrame.pack();
-        mfFrame.setLocationRelativeTo(null);
+        mfFrame = new GenericFrame("PteroGUI | Main", mf, null);
         mfFrame.setVisible(true);
+        mfFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mf.getMassBtn().addActionListener(e ->{
             MassActionDialog mad = new MassActionDialog(mfFrame, mf);
             mad.setResizable(false);
