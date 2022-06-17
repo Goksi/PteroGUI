@@ -40,7 +40,6 @@ public class ServerSettings {
         GenericFrame jFrame = new GenericFrame("PteroGUI | " + server.getIdentifier(), ssf, mainForm.getMfFrame());
         if(!server.isSuspended()){
             executorService = Executors.newSingleThreadScheduledExecutor();
-            /*make this sync ? doesn't fix*/
             executorService.scheduleAtFixedRate(()->{
                 server.retrieveUtilization().executeAsync(utilization -> {
                     ssf.getServerInfoLabel().setText(ssf.getServerInfoLabel().getText().replaceAll("%name", server.getName()).replaceAll("%id", server.getIdentifier())
