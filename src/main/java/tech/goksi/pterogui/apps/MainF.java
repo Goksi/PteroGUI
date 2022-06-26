@@ -1,5 +1,6 @@
 package tech.goksi.pterogui.apps;
 
+import com.mattmalec.pterodactyl4j.ClientType;
 import com.mattmalec.pterodactyl4j.client.entities.Account;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.exceptions.LoginException;
@@ -38,9 +39,9 @@ public class MainF {
         mf.getNameLbl().setText("Welcome %name !".replaceAll("%name", acc.getUserName()));
         final boolean[] rmFirst = {true};  //just so i can remove first default item
         if(acc.isRootAdmin()){
-            FirstTime.getInstance().getApi().retrieveServers(true).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
+            FirstTime.getInstance().getApi().retrieveServers(ClientType.ADMIN).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
         }else {
-            FirstTime.getInstance().getApi().retrieveServers(false).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
+            FirstTime.getInstance().getApi().retrieveServers().forEachAsync(srv -> loadServers(mf, rmFirst, srv));
         }
 
         mfFrame = new GenericFrame("PteroGUI | Main", mf, null);

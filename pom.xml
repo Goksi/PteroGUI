@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.github.Goksi</groupId>
             <artifactId>Pterodactyl4J</artifactId>
-            <version>8588edf</version>
+            <version>f5ead48</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
