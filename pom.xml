@@ -14,15 +14,15 @@
     </properties>
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>mattmalec-repo</id>
+            <url>https://repo.mattmalec.com/repository/releases</url>
         </repository>
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.github.Goksi</groupId>
+            <groupId>com.mattmalec</groupId>
             <artifactId>Pterodactyl4J</artifactId>
-            <version>f5ead48</version>
+            <version>2.BETA_134</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
