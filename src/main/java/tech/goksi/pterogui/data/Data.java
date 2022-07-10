@@ -20,20 +20,17 @@ public class Data {
 
     public void saveDefaultJson(){
         if(!file.exists()){
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("data.json");
-            assert is != null;
-            try{
-                try(OutputStream out = Files.newOutputStream(file.toPath())){
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    while((len = is.read(buffer)) > 0){
-                        out.write(buffer, 0, len);
+            try {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("app_url", "Your pterodactyl panel url here");
+                jsonObject.addProperty("token", "Your api token here");
+                if(file.createNewFile()){
+                    try(OutputStream out = Files.newOutputStream(file.toPath())){
+                        out.write(jsonObject.toString().getBytes());
                     }
                 }
-
-
-            }catch (IOException e){
-                logger.error("Error while writing data file!", e);
+            } catch (IOException e) {
+                logger.error("Error while creating data file!", e);
             }
         }
         try {
