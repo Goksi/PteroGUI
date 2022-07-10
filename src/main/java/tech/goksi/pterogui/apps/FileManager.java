@@ -126,12 +126,7 @@ public class FileManager {
     private File getFileFromPath(String rawPath){
         rawPath = rawPath.substring(1, rawPath.length() - 1);
         String[] path = rawPath.replaceAll(" ", "").split(",");
-        StringBuilder sb = new StringBuilder();
-        sb.append("/");
-        for(int i = 1; i<path.length - 1; i++){
-            sb.append(path[i]).append("/");
-        }
-        String finalS = sb.substring(0, sb.length() == 1 ? 1:sb.length() - 1);
+        String finalS = String.join("/", Arrays.copyOfRange(path, 1, path.length-1));
         Directory dir = server.retrieveDirectory(finalS).execute();
         return (File) dir.getFiles().stream().filter(file -> file.getName().equals(path[path.length-1])).findFirst().orElse(null);
     }
