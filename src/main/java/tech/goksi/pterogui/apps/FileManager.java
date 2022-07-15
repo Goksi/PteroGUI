@@ -4,6 +4,7 @@ import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Directory;
 import com.mattmalec.pterodactyl4j.client.entities.File;
 import com.mattmalec.pterodactyl4j.client.entities.GenericFile;
+import tech.goksi.pterogui.entities.LazyNode;
 import tech.goksi.pterogui.frames.FileEditPanel;
 import tech.goksi.pterogui.frames.GenericFrame;
 
@@ -17,15 +18,14 @@ import java.util.*;
 
 
 public class FileManager {
-    public static boolean STOP_RECURSIVE = false;  //really can't think of another way rn
-    private static final Map<ClientServer, DefaultTreeModel> nodesCache = new HashMap<>();
     private boolean edited = false;
     private boolean cut = false;
-    private DefaultMutableTreeNode cuttedNode;
+    private DefaultMutableTreeNode cutNode;
     private File currentFile;
     private File clipboard;
     private FileEditPanel fep;
-    private static final List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db", "mp3");
+    private DefaultTreeModel model;
+    private static final List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db", "mp3", "rar");
     private final JTree tree;
     private final ClientServer server ;
     public FileManager(JTree tree, ClientServer server){
@@ -34,41 +34,15 @@ public class FileManager {
     }
 
     public void updateUI(){
-        DefaultTreeModel model;
-        if(nodesCache.containsKey(server)){
-            model = nodesCache.get(server);
-        }else {
-            DefaultMutableTreeNode root = new DefaultMutableTreeNode(server.getName());
-            server.retrieveDirectory().executeAsync(f -> updateFiles(f, root));
-            model = new DefaultTreeModel(root);
-            nodesCache.put(server, model);
-        }
+        Directory rootDir = server.retrieveDirectory().execute();
+        LazyNode root = new LazyNode(rootDir);
+        model = new DefaultTreeModel(root);
         tree.setModel(model);
-
+        root.loadChildren(rootDir, server, model);
+        tree.collapseRow(0);
     }
 
-   /*TODO: fix thread blocking, maybe load up to 2 levels and rest after tree expand event*/
-    private void updateFiles(GenericFile file, DefaultMutableTreeNode lastNode){
-        if(STOP_RECURSIVE) return; //nez jebe i dalje ako se sve ne ucita, a to je bas problem ako je neka nodejs aplikacija
-        if(!file.isFile()){
-            DefaultMutableTreeNode dir;
-            if(!file.getName().equals("Root Directory")){
-                dir = new DefaultMutableTreeNode(file.getName());
-            }else {
-                dir = lastNode;
-            }
-            server.retrieveDirectory(file.getPath()).executeAsync(subFolder -> {
-                if(!Objects.equals(subFolder.getName(), file.getName())){
-                    dir.add(new DefaultMutableTreeNode(subFolder.getName()));
-                }
-                subFolder.getFiles().forEach(files -> updateFiles(files, dir));
-            });
-            if(!Objects.equals(dir, lastNode)) lastNode.add(dir);
-        }else {
-            lastNode.add(new DefaultMutableTreeNode(file.getName()));
-        }
-    }
-
+    /*TODO: ArrayIndexOutOfBoundsException for files without extension*/
     public void openFile(){
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         File file = getFileFromPath(rawPath);
@@ -130,7 +104,12 @@ public class FileManager {
         Directory dir = server.retrieveDirectory(finalS).execute();
         return (File) dir.getFiles().stream().filter(file -> file.getName().equals(path[path.length-1])).findFirst().orElse(null);
     }
-
+    public Directory getDirectoryFromPath(String rawPath){
+        rawPath = rawPath.substring(1, rawPath.length() - 1);
+        String[] path = rawPath.replaceAll(" ", "").split(",");
+        String finalS = String.join("/", Arrays.copyOfRange(path, 1, path.length));
+        return server.retrieveDirectory(finalS).execute();
+    }
     public void copy(){
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         clipboard = getFileFromPath(rawPath);
@@ -138,7 +117,7 @@ public class FileManager {
     public void cut(){
         copy();
         cut = true;
-        cuttedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     }
 
     public void paste(){
@@ -155,8 +134,8 @@ public class FileManager {
                     if(file.getName().contains(clipboard.getName().split("\\.")[0]) && !dirToPaste.equals(clipboardDir)){
                         if(cut){
                             file.delete().execute();
-                            ((DefaultTreeModel) tree.getModel()).removeNodeFromParent(cuttedNode);
-                            cuttedNode = null;
+                            ((DefaultTreeModel) tree.getModel()).removeNodeFromParent(cutNode);
+                            cutNode = null;
                             cut = false;
                         }else {
                             file.rename(clipboard.getPath()).execute();
@@ -167,5 +146,9 @@ public class FileManager {
             });
 
         }
+    }
+
+    public DefaultTreeModel getModel() {
+        return model;
     }
 }

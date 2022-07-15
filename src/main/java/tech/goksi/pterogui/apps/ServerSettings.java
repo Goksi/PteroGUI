@@ -5,12 +5,14 @@ import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
 import tech.goksi.pterogui.events.ClickEvent;
+import tech.goksi.pterogui.events.TreeExpandEvent;
 import tech.goksi.pterogui.frames.ConsoleForm;
 import tech.goksi.pterogui.frames.FileManagerUI;
 import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.ServerSettingsFrame;
 
 import javax.swing.*;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -62,7 +64,6 @@ public class ServerSettings {
         }
         /*file manager*/
         ssf.getFileManagerButton().addActionListener(e -> {
-            FileManager.STOP_RECURSIVE = false;
             FileManagerUI fmUI = new FileManagerUI();
             GenericFrame fileManagerFrame = new GenericFrame("PteroGUI | FileManager", fmUI, ssf);
             ssf.getFileManagerButton().setEnabled(false);
@@ -70,15 +71,16 @@ public class ServerSettings {
             ContextMenu contextMenu = new ContextMenu(fileManager);
             fmUI.getTree1().setComponentPopupMenu(contextMenu);
             fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1(), fileManager));
+            fmUI.getTree1().collapseRow(0);
+            fmUI.getTree1().setRootVisible(true);
             fileManager.updateUI();
             fileManagerFrame.setVisible(true);
+            fmUI.getTree1().addTreeWillExpandListener(new TreeExpandEvent(fileManager, server));
 
             fileManagerFrame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
                     ssf.getFileManagerButton().setEnabled(true);
-                    FileManager.STOP_RECURSIVE = true;
-                    //fileManager.getFilesCache().clear();
 
                 }
             });
