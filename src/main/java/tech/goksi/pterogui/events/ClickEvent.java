@@ -1,11 +1,12 @@
 package tech.goksi.pterogui.events;
 
-import tech.goksi.pterogui.apps.ContextMenu;
 import tech.goksi.pterogui.apps.FileManager;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Objects;
 
 public class ClickEvent implements MouseListener {
     private final JTree tree;
@@ -17,7 +18,8 @@ public class ClickEvent implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0
+            &&   !(((DefaultMutableTreeNode) Objects.requireNonNull(tree.getSelectionPath()).getLastPathComponent()).getAllowsChildren()) ) {
             e.consume();
             fm.openFile();
         }
