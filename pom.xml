@@ -6,7 +6,7 @@
 
     <groupId>tech.goksi</groupId>
     <artifactId>PteroGUI</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
