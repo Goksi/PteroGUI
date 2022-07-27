@@ -12,8 +12,7 @@ import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.ServerSettingsFrame;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.DefaultTreeModel;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Objects;
@@ -33,7 +32,7 @@ public class ServerSettings {
         START,
         STOP,
         KILL,
-        RESTART
+        RESTART;
     }
 
     public void init(){
@@ -49,7 +48,7 @@ public class ServerSettings {
                             .replaceAll("%egg", server.getEgg().getName()).replaceAll("%node", server.getNode())
                             .replaceAll("RUNNING|OFFLINE|STARTING|STOPPING|%status", utilization.getState().name()));
                     ssf.getMemoryUsageLbl().setText("Memory usage: %u / %a MB".replaceAll("%a", server.getLimits().getMemory()).
-                            replaceAll("%u", String.format("%.2f", (float)utilization.getMemory()/ 1024F / 1024F)));
+                            replaceAll("%u", String.format("%.2f", (float) utilization.getMemory()/ 1024F / 1024F)));
                 });
             }, 0, 15, TimeUnit.SECONDS);
 
