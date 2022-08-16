@@ -4,6 +4,7 @@ import com.mattmalec.pterodactyl4j.PteroAction;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
+import tech.goksi.pterogui.ServerState;
 import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.events.TreeExpandEvent;
 import tech.goksi.pterogui.frames.ConsoleForm;
@@ -27,12 +28,6 @@ public class ServerSettings {
     public ServerSettings(ClientServer server, MainF mainForm){
         this.server = server;
         this.mainForm = mainForm;
-    }
-    enum State{
-        START,
-        STOP,
-        KILL,
-        RESTART;
     }
 
     public void init(){
@@ -110,16 +105,16 @@ public class ServerSettings {
 
         ssf.getChangeStateBtn().addActionListener(e ->{
             switch (ssf.getStateComboBox().getSelectedIndex()){
-                case 0: Objects.requireNonNull(switchState(State.START, server)).executeAsync(successful ->
+                case 0: ServerState.START.executeAction(server, successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent START signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
                         break;
-                case 1: Objects.requireNonNull(switchState(State.STOP, server)).executeAsync(successful ->
+                case 1: ServerState.STOP.executeAction(server, successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent STOP signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
                         break;
-                case 2: Objects.requireNonNull(switchState(State.KILL, server)).executeAsync(successful ->
+                case 2: ServerState.KILL.executeAction(server, successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent KILL signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
                         break;
-                case 3: Objects.requireNonNull(switchState(State.RESTART, server)).executeAsync(successful ->
+                case 3: ServerState.RESTART.executeAction(server, successful ->
                         JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent RESTART signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
             }
                 });
@@ -145,13 +140,5 @@ public class ServerSettings {
 
     }
 
-    public static PteroAction<Void> switchState(State state, ClientServer server){
-        switch (state){
-            case KILL: return server.kill();
-            case STOP: return server.stop();
-            case START: return server.start();
-            case RESTART: return server.restart();
-        }
-        return null;
-    }
+
 }
