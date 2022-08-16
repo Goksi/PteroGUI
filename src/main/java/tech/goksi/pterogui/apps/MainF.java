@@ -4,6 +4,7 @@ import com.mattmalec.pterodactyl4j.ClientType;
 import com.mattmalec.pterodactyl4j.client.entities.Account;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.exceptions.LoginException;
+import tech.goksi.pterogui.ServerState;
 import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.MainFrame;
 import tech.goksi.pterogui.frames.MassActionDialog;
@@ -38,11 +39,7 @@ public class MainF {
         }
         mf.getNameLbl().setText("Welcome %name !".replaceAll("%name", acc.getUserName()));
         final boolean[] rmFirst = {true};  //just so i can remove first default item
-        if(acc.isRootAdmin()){
-            FirstTime.getInstance().getApi().retrieveServers(ClientType.ADMIN).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
-        }else {
-            FirstTime.getInstance().getApi().retrieveServers().forEachAsync(srv -> loadServers(mf, rmFirst, srv));
-        }
+        FirstTime.getInstance().getApi().retrieveServers(acc.isRootAdmin() ? ClientType.ADMIN : ClientType.NONE).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
 
         mfFrame = new GenericFrame("PteroGUI | Main", mf, null);
         mfFrame.setVisible(true);
@@ -61,18 +58,18 @@ public class MainF {
             mf.getMassBtn().setEnabled(false);
             mad.getOkButton().addActionListener(ev -> {
                 int index = mad.getPowerAction().getSelectedIndex();
-                ServerSettings.State state;
+                ServerState state;
                 switch (index){
-                    case 1: state = ServerSettings.State.STOP;
+                    case 1: state = ServerState.STOP;
                             break;
-                    case 2: state = ServerSettings.State.KILL;
+                    case 2: state = ServerState.KILL;
                             break;
-                    case 3: state = ServerSettings.State.RESTART;
+                    case 3: state = ServerState.RESTART;
                             break;
-                    default: state = ServerSettings.State.START;
+                    default: state = ServerState.START;
                 }
                 for(Map.Entry<String, ClientServer> srv : servers.entrySet()){
-                    Objects.requireNonNull(ServerSettings.switchState(state, srv.getValue())).executeAsync();
+                    state.executeAction(srv.getValue());
                 }
                 mad.dispose();
                 mf.getMassBtn().setEnabled(true);
