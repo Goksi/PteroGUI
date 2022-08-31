@@ -1,14 +1,13 @@
 package tech.goksi.pterogui.apps;
 
-import com.mattmalec.pterodactyl4j.PteroAction;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
 import tech.goksi.pterogui.ServerState;
 import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.events.TreeExpandEvent;
-import tech.goksi.pterogui.frames.ConsoleForm;
-import tech.goksi.pterogui.frames.FileManagerUI;
+import tech.goksi.pterogui.frames.ConsoleFrame;
+import tech.goksi.pterogui.frames.FileManagerFrame;
 import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.ServerSettingsFrame;
 
@@ -16,16 +15,15 @@ import javax.swing.*;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ServerSettings {
     private final ClientServer server;
-    private final MainF mainForm;
+    private final MainWindow mainForm;
     private ScheduledExecutorService executorService;
-    public ServerSettings(ClientServer server, MainF mainForm){
+    public ServerSettings(ClientServer server, MainWindow mainForm){
         this.server = server;
         this.mainForm = mainForm;
     }
@@ -34,6 +32,7 @@ public class ServerSettings {
 
         ServerSettingsFrame ssf = new ServerSettingsFrame();
         GenericFrame jFrame = new GenericFrame("PteroGUI | " + server.getIdentifier(), ssf, mainForm.getMfFrame());
+        /*TODO: add replaceAll util, this looks ugly tbh*/
         if(!server.isSuspended()){
             executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.scheduleAtFixedRate(()->{
@@ -58,7 +57,7 @@ public class ServerSettings {
         }
         /*file manager*/
         ssf.getFileManagerButton().addActionListener(e -> {
-            FileManagerUI fmUI = new FileManagerUI();
+            FileManagerFrame fmUI = new FileManagerFrame();
             GenericFrame fileManagerFrame = new GenericFrame("PteroGUI | FileManager", fmUI, ssf);
             ssf.getFileManagerButton().setEnabled(false);
             FileManager fileManager = new FileManager(fmUI.getTree1(), server);
@@ -83,7 +82,7 @@ public class ServerSettings {
         /*making whole console frame here*/
         ssf.getConsoleBtn().addActionListener(e ->{
             ssf.getConsoleBtn().setEnabled(false);
-            ConsoleForm cf = new ConsoleForm();
+            ConsoleFrame cf = new ConsoleFrame();
             GenericFrame console = new GenericFrame("PteroGUI | Console", cf, null);
             console.setVisible(true);
             WebSocketManager wss = server.getWebSocketBuilder().addEventListeners(new Websocket(cf.getConsoleTxt())).build();
@@ -104,26 +103,20 @@ public class ServerSettings {
         /*end of console*/
 
         ssf.getChangeStateBtn().addActionListener(e ->{
+            ServerState state;
             switch (ssf.getStateComboBox().getSelectedIndex()){
-                case 0: ServerState.START.executeAction(server, successful ->
-                        JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent START signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
+                case 0: state = ServerState.START;
                         break;
-                case 1: ServerState.STOP.executeAction(server, successful ->
-                        JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent STOP signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
+                case 1: state = ServerState.STOP;
                         break;
-                case 2: ServerState.KILL.executeAction(server, successful ->
-                        JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent KILL signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
+                case 2: state = ServerState.KILL;
                         break;
-                case 3: ServerState.RESTART.executeAction(server, successful ->
-                        JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent RESTART signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
+                default:
+                    state = ServerState.RESTART;
             }
-                });
-
-
-
-
-
-
+            state.executeAction(server, successful ->
+                    JOptionPane.showMessageDialog(mainForm.getMfFrame(), "Successfully sent " + state + " signal", "Action completed", JOptionPane.INFORMATION_MESSAGE));
+        });
 
         jFrame.setVisible(true);
 
@@ -134,7 +127,7 @@ public class ServerSettings {
             public void windowClosing(WindowEvent e) {
                 jFrame.dispose();
                 mainForm.getMfFrame().setVisible(true);
-                if(executorService != null &&!executorService.isShutdown())executorService.shutdown();
+                if(executorService != null &&!executorService.isShutdown()) executorService.shutdownNow();
             }
         });
 
