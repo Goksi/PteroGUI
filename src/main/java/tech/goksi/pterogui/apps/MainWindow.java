@@ -7,7 +7,7 @@ import com.mattmalec.pterodactyl4j.exceptions.LoginException;
 import tech.goksi.pterogui.ServerState;
 import tech.goksi.pterogui.frames.GenericFrame;
 import tech.goksi.pterogui.frames.MainFrame;
-import tech.goksi.pterogui.frames.MassActionDialog;
+import tech.goksi.pterogui.frames.MassActionDialogFrame;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class MainF {
+public class MainWindow {
     private Map<String, ClientServer> servers;
     private GenericFrame mfFrame;
 
@@ -45,7 +45,7 @@ public class MainF {
         mfFrame.setVisible(true);
         mfFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mf.getMassBtn().addActionListener(e ->{
-            MassActionDialog mad = new MassActionDialog(mfFrame, mf);
+            MassActionDialogFrame mad = new MassActionDialogFrame(mfFrame, mf);
             mad.setResizable(false);
             mad.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             mad.addWindowListener(new WindowAdapter() {

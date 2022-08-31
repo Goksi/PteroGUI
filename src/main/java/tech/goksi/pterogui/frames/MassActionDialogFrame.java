@@ -13,9 +13,9 @@ import javax.swing.border.*;
 /**
  * @author Goksi
  */
-public class MassActionDialog extends JDialog {
+public class MassActionDialogFrame extends JDialog {
     private final MainFrame mainFrame;
-    public MassActionDialog(Window owner, MainFrame mf) {
+    public MassActionDialogFrame(Window owner, MainFrame mf) {
         super(owner);
         initComponents();
         this.mainFrame = mf;

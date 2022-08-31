@@ -6,13 +6,12 @@ package tech.goksi.pterogui.frames;
 
 import javax.swing.*;
 import javax.swing.GroupLayout;
-import javax.swing.tree.*;
 
 /**
  * @author Goksi
  */
-public class FileManagerUI extends JPanel {
-    public FileManagerUI() {
+public class FileManagerFrame extends JPanel {
+    public FileManagerFrame() {
         initComponents();
     }
 

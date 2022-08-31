@@ -10,8 +10,8 @@ import javax.swing.GroupLayout;
 /**
  * @author unknown
  */
-public class ConsoleForm extends JPanel {
-    public ConsoleForm() {
+public class ConsoleFrame extends JPanel {
+    public ConsoleFrame() {
         initComponents();
     }
 

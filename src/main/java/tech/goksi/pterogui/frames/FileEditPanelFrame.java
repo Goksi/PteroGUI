@@ -11,8 +11,8 @@ import javax.swing.GroupLayout;
 /**
  * @author unknown
  */
-public class FileEditPanel extends JPanel {
-    public FileEditPanel() {
+public class FileEditPanelFrame extends JPanel {
+    public FileEditPanelFrame() {
         initComponents();
     }
 

@@ -5,7 +5,7 @@ import com.mattmalec.pterodactyl4j.client.entities.Directory;
 import com.mattmalec.pterodactyl4j.client.entities.File;
 import com.mattmalec.pterodactyl4j.client.entities.GenericFile;
 import tech.goksi.pterogui.entities.LazyNode;
-import tech.goksi.pterogui.frames.FileEditPanel;
+import tech.goksi.pterogui.frames.FileEditPanelFrame;
 import tech.goksi.pterogui.frames.GenericFrame;
 
 
@@ -23,7 +23,7 @@ public class FileManager {
     private DefaultMutableTreeNode cutNode;
     private File currentFile;
     private File clipboard;
-    private FileEditPanel fep;
+    private FileEditPanelFrame fep;
     private DefaultTreeModel model;
     private static final List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db", "mp3", "rar");
     private final JTree tree;
@@ -48,7 +48,7 @@ public class FileManager {
         File file = getFileFromPath(rawPath);
         if(!file.isFile() || NON_READABLE.contains(file.getName().split("\\.")[1])) return;
         currentFile = file;
-        fep = new FileEditPanel();
+        fep = new FileEditPanelFrame();
         GenericFrame fileEdit = new GenericFrame("PteroGUI | " + file.getName(), fep, tree);
         fep.getButton2().addActionListener(e -> fileEdit.dispose());
         fep.getButton1().addActionListener(e -> save(fileEdit));
