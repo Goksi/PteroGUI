@@ -39,7 +39,7 @@ public class MainWindow {
         }
         mf.getNameLbl().setText("Welcome %name !".replaceAll("%name", acc.getUserName()));
         final boolean[] rmFirst = {true};  //just so i can remove first default item
-        FirstTime.getInstance().getApi().retrieveServers(acc.isRootAdmin() ? ClientType.ADMIN : ClientType.NONE).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
+        FirstTime.getInstance().getApi().retrieveServers(acc.isRootAdmin() ? ClientType.ADMIN_ALL : ClientType.NONE).forEachAsync(srv -> loadServers(mf, rmFirst, srv));
 
         mfFrame = new GenericFrame("PteroGUI | Main", mf, null);
         mfFrame.setVisible(true);
