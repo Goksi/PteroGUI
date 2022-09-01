@@ -15,6 +15,7 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainWindow {
     private Map<String, ClientServer> servers;
@@ -68,11 +69,13 @@ public class MainWindow {
                             break;
                     default: state = ServerState.START;
                 }
+                /*TODO: error handling*/
                 for(Map.Entry<String, ClientServer> srv : servers.entrySet()){
                     state.executeAction(srv.getValue());
                 }
                 mad.dispose();
                 mf.getMassBtn().setEnabled(true);
+                JOptionPane.showMessageDialog(mf, "Successfully sent " + state + " signal to all servers!", "Action success !", JOptionPane.INFORMATION_MESSAGE);
 
             });
         });
