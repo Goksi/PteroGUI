@@ -43,14 +43,13 @@ public class FileManager {
         LazyNode root = new LazyNode(rootDir);
         model = new DefaultTreeModel(root);
         tree.setModel(model);
-        root.loadChildren(rootDir, server, model);
+        root.loadChildren(rootDir, model);
         tree.collapseRow(0);
     }
 
     /*TODO: ArrayIndexOutOfBoundsException for files without extension*/
     public void openFile(){
-        String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
-        File file = getFileFromPath(rawPath);
+        File file = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
         if(!file.isFile() || NON_READABLE.contains(file.getName().split("\\.")[1])) return;
         currentFile = file;
         fep = new FileEditPanelFrame();
@@ -96,28 +95,13 @@ public class FileManager {
     }
 
     public void delete(){
-        String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         ((DefaultTreeModel) tree.getModel()).removeNodeFromParent((DefaultMutableTreeNode)tree.getLastSelectedPathComponent());
-        File file = getFileFromPath(rawPath);
+        File file = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
         file.delete().execute();
     }
-    /*TODO: probably fixed space in name, need to test*/
-    private File getFileFromPath(String rawPath){
-        rawPath = rawPath.substring(1, rawPath.length() - 1);
-        String[] path = Arrays.stream(rawPath.split(",")).map(String::trim).toArray(String[]::new);
-        String finalS = String.join("/", Arrays.copyOfRange(path, 1, path.length-1));
-        Directory dir = server.retrieveDirectory(finalS.length() == 0 ? "/" : finalS).execute();
-        return (File) dir.getFiles().stream().filter(file -> file.getName().equals(path[path.length-1])).findFirst().orElse(null);
-    }
-    public Directory getDirectoryFromPath(String rawPath){
-        rawPath = rawPath.substring(1, rawPath.length() - 1);
-        String[] path = rawPath.replaceAll(" ", "").split(",");
-        String finalS = String.join("/", Arrays.copyOfRange(path, 1, path.length));
-        return server.retrieveDirectory(finalS).execute();
-    }
+
     public void copy(){
-        String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
-        clipboard = getFileFromPath(rawPath);
+        clipboard = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
     }
     /*TODO: cut problem*/
     public void cut(){
@@ -126,15 +110,13 @@ public class FileManager {
         cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     }
     /*TODO: not working if moving dir up (have to use ../ pathing, gonna kms)*/
-
     public void paste(){
         if(clipboard == null) return;
         TreePath selectionPath = tree.getSelectionPath();
         if(selectionPath == null) return;
-        File selectedFile = getFileFromPath(selectionPath.toString());
-        String tmp;
-        String dirToPaste = (tmp = selectedFile.getPath().replaceAll(selectedFile.getName(), "")).equals("/") ? tmp : "/" + tmp;
-        String currentDir = (tmp = clipboard.getPath().replaceAll(clipboard.getName(), "")).equals("/") ? tmp : "/" + tmp;
+        File selectedFile = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
+        String dirToPaste = selectedFile.getPath().replaceAll(selectedFile.getName(), "");
+        String currentDir = clipboard.getPath().replaceAll(clipboard.getName(), "");
         int pasteSlash, currentSlash; //initialization in case pasting to upper dir is needed, it won't go out of int range.... ig ¯\_(ツ)_/¯
         if((pasteSlash = (int) dirToPaste.chars().filter(ch -> ch == '/').count()) < (currentSlash = (int) currentDir.chars().filter(ch -> ch == '/').count())){
             int numberOfDots = currentSlash - pasteSlash;
