@@ -3,10 +3,12 @@ package tech.goksi.pterogui.apps;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Directory;
 import com.mattmalec.pterodactyl4j.client.entities.File;
-import com.mattmalec.pterodactyl4j.client.entities.GenericFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.goksi.pterogui.entities.LazyNode;
 import tech.goksi.pterogui.frames.FileEditPanelFrame;
 import tech.goksi.pterogui.frames.GenericFrame;
+import tech.goksi.pterogui.utils.StringUtils;
 
 
 import javax.swing.*;
@@ -14,6 +16,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.util.*;
 
 
@@ -28,9 +31,11 @@ public class FileManager {
     private static final List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db", "mp3", "rar");
     private final JTree tree;
     private final ClientServer server ;
+    private final Logger logger;
     public FileManager(JTree tree, ClientServer server){
         this.tree = tree;
         this.server = server;
+        this.logger = LoggerFactory.getLogger(getClass());
     }
 
     public void updateUI(){
@@ -74,7 +79,7 @@ public class FileManager {
                     fileEdit.setTitle("PteroGUI | " +"*" +file.getName());
                     edited = true;
                 }else {
-                    fileEdit.setTitle("PteroGUI | "  +file.getName());
+                    fileEdit.setTitle("PteroGUI | "  + file.getName());
                     edited = false;
                 }
             }
@@ -96,12 +101,12 @@ public class FileManager {
         File file = getFileFromPath(rawPath);
         file.delete().execute();
     }
-
+    /*TODO: probably fixed space in name, need to test*/
     private File getFileFromPath(String rawPath){
         rawPath = rawPath.substring(1, rawPath.length() - 1);
-        String[] path = rawPath.replaceAll(" ", "").split(",");
+        String[] path = Arrays.stream(rawPath.split(",")).map(String::trim).toArray(String[]::new);
         String finalS = String.join("/", Arrays.copyOfRange(path, 1, path.length-1));
-        Directory dir = server.retrieveDirectory(finalS).execute();
+        Directory dir = server.retrieveDirectory(finalS.length() == 0 ? "/" : finalS).execute();
         return (File) dir.getFiles().stream().filter(file -> file.getName().equals(path[path.length-1])).findFirst().orElse(null);
     }
     public Directory getDirectoryFromPath(String rawPath){
@@ -114,13 +119,35 @@ public class FileManager {
         String rawPath = Objects.requireNonNull(tree.getSelectionPath()).toString();
         clipboard = getFileFromPath(rawPath);
     }
+    /*TODO: cut problem*/
     public void cut(){
         copy();
         cut = true;
         cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     }
+    /*TODO: not working if moving dir up (have to use ../ pathing, gonna kms)*/
 
     public void paste(){
+        if(clipboard == null) return;
+        TreePath selectionPath = tree.getSelectionPath();
+        if(selectionPath == null) return;
+        File selectedFile = getFileFromPath(selectionPath.toString());
+        String tmp;
+        String dirToPaste = (tmp = selectedFile.getPath().replaceAll(selectedFile.getName(), "")).equals("/") ? tmp : "/" + tmp;
+        String currentDir = (tmp = clipboard.getPath().replaceAll(clipboard.getName(), "")).equals("/") ? tmp : "/" + tmp;
+        if(dirToPaste.chars().filter(ch -> ch == '/').count() < currentDir.chars().filter(ch -> ch == '/').count()){
+            int numberOfDots = (int) StringUtils.difference(dirToPaste, currentDir).chars().filter(ch -> ch == '/').count(); //won't go out of int range... ig
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < numberOfDots; i++) sb.append("../");
+            dirToPaste = sb.toString();
+        }
+    }
+
+    public DefaultTreeModel getModel() {
+        return model;
+    }
+
+    /*public void paste(){
         if(clipboard != null){
             File selectedOne = getFileFromPath(Objects.requireNonNull(tree.getSelectionPath()).toString());
             ((DefaultMutableTreeNode) tree.getSelectionPath().getParentPath().getLastPathComponent()).add(new DefaultMutableTreeNode(clipboard.getName())); // ne reloada tree nakon dodavanja node-a
@@ -128,6 +155,7 @@ public class FileManager {
             String dirToPaste = selectedOne.getPath().replaceAll(selectedOne.getName(), "");
             String clipboardDir = clipboard.getPath().replaceAll(clipboard.getName(), "");
             clipboard.copy().execute();
+            logger.debug("Final string to paste is {}", dirToPaste + clipboard.getName());
             clipboard.rename(dirToPaste + clipboard.getName()).execute();
             server.retrieveDirectory(clipboardDir).executeAsync(dir -> {
                 for(GenericFile file : dir.getFiles()){
@@ -144,11 +172,14 @@ public class FileManager {
                     }
                 }
             });
-
         }
-    }
+    }*/
 
-    public DefaultTreeModel getModel() {
-        return model;
-    }
+    /*private File getFileFromPath(String rawPath){
+        rawPath = rawPath.substring(1, rawPath.length() - 1);
+        String[] path = rawPath.replaceAll(" ", "").split(",");
+        String finalS = String.join("/", Arrays.copyOfRange(path, 1, path.length-1));
+        Directory dir = server.retrieveDirectory(finalS.length() == 0 ? "/" : finalS).execute();
+        return (File) dir.getFiles().stream().filter(file -> file.getName().equals(path[path.length-1])).findFirst().orElse(null);
+    }*/
 }
