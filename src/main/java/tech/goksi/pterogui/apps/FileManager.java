@@ -135,12 +135,14 @@ public class FileManager {
         String tmp;
         String dirToPaste = (tmp = selectedFile.getPath().replaceAll(selectedFile.getName(), "")).equals("/") ? tmp : "/" + tmp;
         String currentDir = (tmp = clipboard.getPath().replaceAll(clipboard.getName(), "")).equals("/") ? tmp : "/" + tmp;
-        if(dirToPaste.chars().filter(ch -> ch == '/').count() < currentDir.chars().filter(ch -> ch == '/').count()){
-            int numberOfDots = (int) StringUtils.difference(dirToPaste, currentDir).chars().filter(ch -> ch == '/').count(); //won't go out of int range... ig
+        int pasteSlash, currentSlash; //initialization in case pasting to upper dir is needed, it won't go out of int range.... ig ¯\_(ツ)_/¯
+        if((pasteSlash = (int) dirToPaste.chars().filter(ch -> ch == '/').count()) < (currentSlash = (int) currentDir.chars().filter(ch -> ch == '/').count())){
+            int numberOfDots = currentSlash - pasteSlash;
             StringBuilder sb = new StringBuilder();
             for(int i = 0; i < numberOfDots; i++) sb.append("../");
             dirToPaste = sb.toString();
         }
+        logger.debug("Dir to paste is {}", dirToPaste + clipboard.getName());
     }
 
     public DefaultTreeModel getModel() {
