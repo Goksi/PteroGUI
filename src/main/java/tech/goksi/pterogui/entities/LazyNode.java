@@ -21,7 +21,7 @@ public class LazyNode extends DefaultMutableTreeNode {
     private final Logger logger;
 
 
-    /*TODO: somehow make dir show as dir even if empty*/
+
     public LazyNode(GenericFile file){
         add(new DefaultMutableTreeNode("Loading...", false));
         setAllowsChildren(!file.isFile());
@@ -73,6 +73,7 @@ public class LazyNode extends DefaultMutableTreeNode {
 
             if(value instanceof LazyNode){
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+                /*TODO: different type of icons for different file types :thinking:*/
                 if(node.getUserObject() instanceof File){
                     File file = (File) node.getUserObject();
                     setText(file.getName());

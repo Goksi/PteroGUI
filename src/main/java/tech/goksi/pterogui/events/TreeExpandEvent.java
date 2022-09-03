@@ -25,7 +25,7 @@ public class TreeExpandEvent implements TreeWillExpandListener {
         TreePath path = event.getPath();
         if(path.getLastPathComponent() instanceof LazyNode){
             LazyNode node = (LazyNode) path.getLastPathComponent();
-            Directory dir = (Directory) node.getUserObject();
+            Directory dir = (Directory) node.getUserObject(); //if this event triggers, it will always be dir
             node.loadChildren(dir.into(dir).execute(), model);
         }
     }
