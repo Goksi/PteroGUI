@@ -13,7 +13,7 @@ public class StringUtils {
         if (at == -1) {
             return "";
         }
-        return str2.substring(at);
+        return str1.substring(at);
     }
 
     private static int indexOfDifference(CharSequence cs1, CharSequence cs2) {

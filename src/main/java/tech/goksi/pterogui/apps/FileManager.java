@@ -110,6 +110,7 @@ public class FileManager {
         cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     }
     /*TODO: not working if moving dir up (have to use ../ pathing, gonna kms)*/
+    /*TODO: paste in empty folder*/
     public void paste(){
         if(clipboard == null) return;
         TreePath selectionPath = tree.getSelectionPath();
@@ -117,12 +118,14 @@ public class FileManager {
         File selectedFile = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
         String dirToPaste = selectedFile.getPath().replaceAll(selectedFile.getName(), "");
         String currentDir = clipboard.getPath().replaceAll(clipboard.getName(), "");
-        int pasteSlash, currentSlash; //initialization in case pasting to upper dir is needed, it won't go out of int range.... ig ¯\_(ツ)_/¯
-        if((pasteSlash = (int) dirToPaste.chars().filter(ch -> ch == '/').count()) < (currentSlash = (int) currentDir.chars().filter(ch -> ch == '/').count())){
-            int numberOfDots = currentSlash - pasteSlash;
+        int currentSlash; //initialization in case pasting to upper dir is needed, it won't go out of int range.... ig ¯\_(ツ)_/¯
+        if( (int) dirToPaste.chars().filter(ch -> ch == '/').count() <= (currentSlash = (int) currentDir.chars().filter(ch -> ch == '/').count()) && !dirToPaste.equals(currentDir)){
+            String difference = StringUtils.difference(dirToPaste, currentDir);
+            logger.debug("Difference is {}", difference);
+            int numberOfDots = currentSlash - (int) difference.chars().filter(ch -> ch == '/').count() - 1;
             StringBuilder sb = new StringBuilder();
             for(int i = 0; i < numberOfDots; i++) sb.append("../");
-            dirToPaste = sb.toString();
+            dirToPaste = sb + difference;
         }
         logger.debug("Dir to paste is {}", dirToPaste + clipboard.getName());
     }
@@ -159,11 +162,4 @@ public class FileManager {
         }
     }*/
 
-    /*private File getFileFromPath(String rawPath){
-        rawPath = rawPath.substring(1, rawPath.length() - 1);
-        String[] path = rawPath.replaceAll(" ", "").split(",");
-        String finalS = String.join("/", Arrays.copyOfRange(path, 1, path.length-1));
-        Directory dir = server.retrieveDirectory(finalS.length() == 0 ? "/" : finalS).execute();
-        return (File) dir.getFiles().stream().filter(file -> file.getName().equals(path[path.length-1])).findFirst().orElse(null);
-    }*/
 }
