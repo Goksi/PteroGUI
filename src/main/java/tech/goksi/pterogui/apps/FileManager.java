@@ -133,33 +133,4 @@ public class FileManager {
     public DefaultTreeModel getModel() {
         return model;
     }
-
-    /*public void paste(){
-        if(clipboard != null){
-            File selectedOne = getFileFromPath(Objects.requireNonNull(tree.getSelectionPath()).toString());
-            ((DefaultMutableTreeNode) tree.getSelectionPath().getParentPath().getLastPathComponent()).add(new DefaultMutableTreeNode(clipboard.getName())); // ne reloada tree nakon dodavanja node-a
-            ((DefaultTreeModel) tree.getModel()).reload();;
-            String dirToPaste = selectedOne.getPath().replaceAll(selectedOne.getName(), "");
-            String clipboardDir = clipboard.getPath().replaceAll(clipboard.getName(), "");
-            clipboard.copy().execute();
-            logger.debug("Final string to paste is {}", dirToPaste + clipboard.getName());
-            clipboard.rename(dirToPaste + clipboard.getName()).execute();
-            server.retrieveDirectory(clipboardDir).executeAsync(dir -> {
-                for(GenericFile file : dir.getFiles()){
-                    if(file.getName().contains(clipboard.getName().split("\\.")[0]) && !dirToPaste.equals(clipboardDir)){
-                        if(cut){
-                            file.delete().execute();
-                            ((DefaultTreeModel) tree.getModel()).removeNodeFromParent(cutNode);
-                            cutNode = null;
-                            cut = false;
-                        }else {
-                            file.rename(clipboard.getPath()).execute();
-                        }
-                        break;
-                    }
-                }
-            });
-        }
-    }*/
-
 }
