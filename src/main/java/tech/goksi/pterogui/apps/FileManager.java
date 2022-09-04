@@ -17,7 +17,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.time.OffsetDateTime;
 import java.util.*;
+
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 
 public class FileManager {
@@ -103,31 +106,41 @@ public class FileManager {
     public void copy(){
         clipboard = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
     }
-    /*TODO: cut problem*/
     public void cut(){
         copy();
         cut = true;
-        cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        //cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     }
-    /*TODO: not working if moving dir up (have to use ../ pathing, gonna kms)*/
     /*TODO: paste in empty folder*/
     public void paste(){
         if(clipboard == null) return;
         TreePath selectionPath = tree.getSelectionPath();
         if(selectionPath == null) return;
-        File selectedFile = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
+        File selectedFile = (File) ((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).getUserObject();
         String dirToPaste = selectedFile.getPath().replaceAll(selectedFile.getName(), "");
         String currentDir = clipboard.getPath().replaceAll(clipboard.getName(), "");
         int currentSlash; //initialization in case pasting to upper dir is needed, it won't go out of int range.... ig ¯\_(ツ)_/¯
         if( (int) dirToPaste.chars().filter(ch -> ch == '/').count() <= (currentSlash = (int) currentDir.chars().filter(ch -> ch == '/').count()) && !dirToPaste.equals(currentDir)){
             String difference = StringUtils.difference(dirToPaste, currentDir);
-            logger.debug("Difference is {}", difference);
             int numberOfDots = currentSlash - (int) difference.chars().filter(ch -> ch == '/').count() - 1;
             StringBuilder sb = new StringBuilder();
             for(int i = 0; i < numberOfDots; i++) sb.append("../");
             dirToPaste = sb + difference;
         }
-        logger.debug("Dir to paste is {}", dirToPaste + clipboard.getName());
+        if(!cut) {
+            clipboard.copy().execute();
+        }
+        clipboard.rename(dirToPaste + clipboard.getName()).execute();
+        if(!cut){
+            server.retrieveDirectory(currentDir).executeAsync(dir -> {
+                dir.getFiles().forEach(file -> {
+                    /*if it's more than 1 minute, file probably isn't created with this operation*/
+                    if(file.getName().contains(clipboard.getName().split("\\.")[0] + " copy") && MINUTES.between(file.getCreationDate(), OffsetDateTime.now()) <= 1){
+                        file.rename(clipboard.getName()).execute();
+                    }
+                });
+            });
+        }
     }
 
     public DefaultTreeModel getModel() {
