@@ -4,6 +4,7 @@ import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
 import tech.goksi.pterogui.ServerState;
+import tech.goksi.pterogui.entities.LazyNode;
 import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.events.TreeExpandEvent;
 import tech.goksi.pterogui.frames.ConsoleFrame;
@@ -66,9 +67,10 @@ public class ServerSettings {
             fmUI.getTree1().addMouseListener(new ClickEvent(fmUI.getTree1(), fileManager));
             fmUI.getTree1().collapseRow(0);
             fmUI.getTree1().setRootVisible(true);
+            fmUI.getTree1().setCellRenderer(new LazyNode.TreeRender());
             fileManager.updateUI();
             fileManagerFrame.setVisible(true);
-            fmUI.getTree1().addTreeWillExpandListener(new TreeExpandEvent(fileManager, server));
+            fmUI.getTree1().addTreeWillExpandListener(new TreeExpandEvent(fileManager));
 
             fileManagerFrame.addWindowListener(new WindowAdapter() {
                 @Override

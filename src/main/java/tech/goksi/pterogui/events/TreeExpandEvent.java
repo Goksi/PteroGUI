@@ -1,6 +1,7 @@
 package tech.goksi.pterogui.events;
 
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
+import com.mattmalec.pterodactyl4j.client.entities.Directory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.goksi.pterogui.apps.FileManager;
@@ -16,24 +17,21 @@ import javax.swing.tree.TreePath;
 
 public class TreeExpandEvent implements TreeWillExpandListener {
     private final DefaultTreeModel model;
-    private final ClientServer server;
-    private final FileManager fileManager;
-    public TreeExpandEvent(FileManager fileManager, ClientServer server ){
-        this.server = server;
-        this.fileManager = fileManager;
+    public TreeExpandEvent(FileManager fileManager ){
         this.model = fileManager.getModel();
     }
     @Override
-    public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+    public void treeWillExpand(TreeExpansionEvent event) {
         TreePath path = event.getPath();
         if(path.getLastPathComponent() instanceof LazyNode){
             LazyNode node = (LazyNode) path.getLastPathComponent();
-            node.loadChildren(fileManager.getDirectoryFromPath(path.toString()),server, model);
+            Directory dir = (Directory) node.getUserObject(); //if this event triggers, it will always be dir
+            node.loadChildren(dir.into(dir).execute(), model);
         }
     }
 
     @Override
-    public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
+    public void treeWillCollapse(TreeExpansionEvent event) {
 
     }
 }

@@ -11,6 +11,7 @@ public class ContextMenuEvent implements ActionListener {
     public ContextMenuEvent(FileManager fm){
         this.fm = fm;
     }
+    /*TODO: ClassCastException if right click on empty folder*/
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() instanceof JMenuItem){
