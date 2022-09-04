@@ -38,12 +38,11 @@ public class LazyNode extends DefaultMutableTreeNode {
         }
         childrenLoaded = true;
     }
-    /*TODO: childrenLoaded doesn't actually work, update it does but its calling api anyway because of file in args, probably will change that*/
     public void loadChildren(GenericFile file, DefaultTreeModel model){
         if (childrenLoaded) return;
         new SwingWorker<List<LazyNode>, Void>() {
             @Override
-            protected List<LazyNode> doInBackground() throws Exception {
+            protected List<LazyNode> doInBackground() {
                 ArrayList<LazyNode> node = new ArrayList<>();
                 if(!file.isFile()){
                     Directory dir = (Directory) file;

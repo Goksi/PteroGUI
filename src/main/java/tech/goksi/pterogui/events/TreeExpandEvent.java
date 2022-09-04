@@ -21,7 +21,7 @@ public class TreeExpandEvent implements TreeWillExpandListener {
         this.model = fileManager.getModel();
     }
     @Override
-    public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+    public void treeWillExpand(TreeExpansionEvent event) {
         TreePath path = event.getPath();
         if(path.getLastPathComponent() instanceof LazyNode){
             LazyNode node = (LazyNode) path.getLastPathComponent();
@@ -31,7 +31,7 @@ public class TreeExpandEvent implements TreeWillExpandListener {
     }
 
     @Override
-    public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
+    public void treeWillCollapse(TreeExpansionEvent event) {
 
     }
 }
