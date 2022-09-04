@@ -2,18 +2,12 @@ package tech.goksi.pterogui.utils;
 
 public class StringUtils {
 
-    public static String difference(String str1, String str2) {
-        if (str1 == null) {
-            return str2;
-        }
-        if (str2 == null) {
-            return str1;
-        }
+    public static PathStringWrapper difference(String str1, String str2) {
         int at = indexOfDifference(str1, str2);
         if (at == -1) {
-            return "";
+            return new PathStringWrapper("", "");
         }
-        return str1.substring(at);
+        return new PathStringWrapper(str1.substring(at), str2.substring(at));
     }
 
     private static int indexOfDifference(CharSequence cs1, CharSequence cs2) {

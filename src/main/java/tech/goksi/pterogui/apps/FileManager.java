@@ -3,11 +3,13 @@ package tech.goksi.pterogui.apps;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Directory;
 import com.mattmalec.pterodactyl4j.client.entities.File;
+import com.mattmalec.pterodactyl4j.exceptions.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.goksi.pterogui.entities.LazyNode;
 import tech.goksi.pterogui.frames.FileEditPanelFrame;
 import tech.goksi.pterogui.frames.GenericFrame;
+import tech.goksi.pterogui.utils.PathStringWrapper;
 import tech.goksi.pterogui.utils.StringUtils;
 
 
@@ -26,6 +28,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 public class FileManager {
     private boolean edited = false;
     private boolean cut = false;
+
     private DefaultMutableTreeNode cutNode;
     private File currentFile;
     private File clipboard;
@@ -98,8 +101,8 @@ public class FileManager {
     }
 
     public void delete(){
-        ((DefaultTreeModel) tree.getModel()).removeNodeFromParent((DefaultMutableTreeNode)tree.getLastSelectedPathComponent());
         File file = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
+        ((DefaultTreeModel) tree.getModel()).removeNodeFromParent((DefaultMutableTreeNode)tree.getLastSelectedPathComponent());
         file.delete().execute();
     }
 
@@ -109,7 +112,7 @@ public class FileManager {
     public void cut(){
         copy();
         cut = true;
-        //cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        cutNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     }
     /*TODO: paste in empty folder*/
     public void paste(){
@@ -117,20 +120,31 @@ public class FileManager {
         TreePath selectionPath = tree.getSelectionPath();
         if(selectionPath == null) return;
         File selectedFile = (File) ((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).getUserObject();
-        String dirToPaste = selectedFile.getPath().replaceAll(selectedFile.getName(), "");
+        String ogDirToPaste = selectedFile.getPath().replaceAll(selectedFile.getName(), "");
         String currentDir = clipboard.getPath().replaceAll(clipboard.getName(), "");
-        int currentSlash; //initialization in case pasting to upper dir is needed, it won't go out of int range.... ig ¯\_(ツ)_/¯
-        if( (int) dirToPaste.chars().filter(ch -> ch == '/').count() <= (currentSlash = (int) currentDir.chars().filter(ch -> ch == '/').count()) && !dirToPaste.equals(currentDir)){
-            String difference = StringUtils.difference(dirToPaste, currentDir);
-            int numberOfDots = currentSlash - (int) difference.chars().filter(ch -> ch == '/').count() - 1;
+        String dirToPaste = ogDirToPaste;
+        if( (int) dirToPaste.chars().filter(ch -> ch == '/').count() <= (int) currentDir.chars().filter(ch -> ch == '/').count() && !dirToPaste.equals(currentDir)){
+            PathStringWrapper difference = StringUtils.difference(dirToPaste, currentDir);
+            logger.debug("Dir to paste is {}, and current dir is {} and appender is {} and divisor {}", dirToPaste, currentDir, difference.getAppender(), difference.getDivisor());
+            int numberOfDots = (int) difference.getDivisor().chars().filter(ch -> ch == '/').count();
             StringBuilder sb = new StringBuilder();
             for(int i = 0; i < numberOfDots; i++) sb.append("../");
-            dirToPaste = sb + difference;
+            dirToPaste = sb.append(difference.getAppender()).toString();
+            if(currentDir.contains(ogDirToPaste) && dirToPaste.equals("/")) dirToPaste = dirToPaste.replaceFirst("../", "");
         }
         if(!cut) {
             clipboard.copy().execute();
         }
-        clipboard.rename(dirToPaste + clipboard.getName()).execute();
+        logger.debug("Dir to paste {}", dirToPaste);
+
+        try{
+            clipboard.rename(dirToPaste + clipboard.getName()).execute();
+        }catch (HttpException e){
+            if(e.getMessage().contains("An error occurred on the remote host: Cannot move or rename file, destination already exists..")) {
+                JOptionPane.showMessageDialog(tree, "This operation was not completed because file with same name already exist!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            return;
+        }
         if(!cut){
             server.retrieveDirectory(currentDir).executeAsync(dir -> {
                 dir.getFiles().forEach(file -> {
@@ -140,7 +154,17 @@ public class FileManager {
                     }
                 });
             });
+        }else {
+            cut = false;
+            ((DefaultTreeModel) tree.getModel()).removeNodeFromParent(cutNode);
+            cutNode = null;
         }
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode)((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).getParent();
+        parent.add(new LazyNode(server.retrieveDirectory(ogDirToPaste).execute().getFiles()
+                .stream()
+                .filter(file -> file.getName().equals(clipboard.getName()))
+                .findFirst().orElse(clipboard)));
+        ((DefaultTreeModel) tree.getModel()).reload(parent);
     }
 
     public DefaultTreeModel getModel() {
