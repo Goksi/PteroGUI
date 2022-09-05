@@ -4,8 +4,6 @@ import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Directory;
 import com.mattmalec.pterodactyl4j.client.entities.File;
 import com.mattmalec.pterodactyl4j.exceptions.HttpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.goksi.pterogui.entities.LazyNode;
 import tech.goksi.pterogui.frames.FileEditPanelFrame;
 import tech.goksi.pterogui.frames.GenericFrame;
@@ -37,11 +35,9 @@ public class FileManager {
     private static final List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db", "mp3", "rar");
     private final JTree tree;
     private final ClientServer server ;
-    private final Logger logger;
     public FileManager(JTree tree, ClientServer server){
         this.tree = tree;
         this.server = server;
-        this.logger = LoggerFactory.getLogger(getClass());
     }
 
     public void updateUI(){
@@ -125,7 +121,6 @@ public class FileManager {
         String dirToPaste = ogDirToPaste;
         if( (int) dirToPaste.chars().filter(ch -> ch == '/').count() <= (int) currentDir.chars().filter(ch -> ch == '/').count() && !dirToPaste.equals(currentDir)){
             PathStringWrapper difference = StringUtils.difference(dirToPaste, currentDir);
-            logger.debug("Dir to paste is {}, and current dir is {} and appender is {} and divisor {}", dirToPaste, currentDir, difference.getAppender(), difference.getDivisor());
             int numberOfDots = (int) difference.getDivisor().chars().filter(ch -> ch == '/').count();
             StringBuilder sb = new StringBuilder();
             for(int i = 0; i < numberOfDots; i++) sb.append("../");
@@ -135,7 +130,6 @@ public class FileManager {
         if(!cut) {
             clipboard.copy().execute();
         }
-        logger.debug("Dir to paste {}", dirToPaste);
 
         try{
             clipboard.rename(dirToPaste + clipboard.getName()).execute();
