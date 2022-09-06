@@ -8,7 +8,7 @@ import javax.swing.*;
 import javax.swing.GroupLayout;
 
 /**
- * @author unknown
+ * @author Goksi
  */
 public class ConsoleFrame extends JPanel {
     public ConsoleFrame() {
@@ -25,6 +25,10 @@ public class ConsoleFrame extends JPanel {
 
     public JTextField getCommandTxt() {
         return commandTxt;
+    }
+
+    public JScrollPane getScrollPane() {
+        return scrollPane1;
     }
 
     private void initComponents() {
