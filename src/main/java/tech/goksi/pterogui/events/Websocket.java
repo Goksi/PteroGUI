@@ -1,4 +1,4 @@
-package tech.goksi.pterogui.apps;
+package tech.goksi.pterogui.events;
 
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
 import com.mattmalec.pterodactyl4j.client.ws.events.AuthSuccessEvent;
@@ -19,6 +19,7 @@ public class Websocket extends ClientSocketListenerAdapter {
 
     @Override
     public void onOutput(OutputEvent event){
-        console.setText(console.getText() + event.getLine() + '\n' );
+        console.append(event.getLine().replaceAll("\u001B", ""));
+        console.append("\n");
     }
 }
