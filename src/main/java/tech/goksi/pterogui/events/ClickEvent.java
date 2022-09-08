@@ -15,10 +15,9 @@ public class ClickEvent implements MouseListener {
         this.tree = tree;
         this.fm = fm;
     }
-    /*TODO: npe if clicked fast 2 , probably tree.getLastSelectedPathComponent() null */
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2 && !e.isConsumed() && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0
+        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2 && !e.isConsumed() && tree.getLastSelectedPathComponent() != null && tree.getModel().getChildCount(tree.getLastSelectedPathComponent()) == 0
             &&   !(((DefaultMutableTreeNode) Objects.requireNonNull(tree.getSelectionPath()).getLastPathComponent()).getAllowsChildren()) ) {
             e.consume();
             fm.openFile();
