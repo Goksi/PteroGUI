@@ -32,7 +32,7 @@ public class FileManager {
     private File clipboard;
     private FileEditPanelFrame fep;
     private DefaultTreeModel model;
-    private static final List<String> NON_READABLE = Arrays.asList("sqlite", "jar", "exe", "db", "mp3", "rar");
+    private static final Set<String> NON_READABLE = new HashSet<>(Arrays.asList("sqlite", "jar", "exe", "db", "mp3", "rar"));
     private final JTree tree;
     private final ClientServer server ;
     public FileManager(JTree tree, ClientServer server){
@@ -48,11 +48,9 @@ public class FileManager {
         root.loadChildren(rootDir, model);
         tree.collapseRow(0);
     }
-
-    /*TODO: ArrayIndexOutOfBoundsException for files without extension*/
     public void openFile(){
         File file = (File) ((LazyNode) tree.getLastSelectedPathComponent()).getUserObject();
-        if(!file.isFile() || NON_READABLE.contains(file.getName().split("\\.")[1])) return;
+        if(!file.isFile() || NON_READABLE.contains(file.getName().substring(file.getName().lastIndexOf("\\.") + 1))) return;
         currentFile = file;
         fep = new FileEditPanelFrame();
         GenericFrame fileEdit = new GenericFrame("PteroGUI | " + file.getName(), fep, tree);
@@ -93,6 +91,7 @@ public class FileManager {
         if(edited){
             server.getFileManager().write(currentFile, fep.getTextArea1().getText()).execute();
             jframe.dispose();
+            edited = false;
         }
     }
 
