@@ -18,6 +18,21 @@ public enum ServerState {
     }
 
     public void executeAction(ClientServer server, Consumer<Void> success, Consumer<? super Throwable> failure){
+        getAction(server).executeAsync(success, failure);
+    }
+    public void executeAction(ClientServer server) {
+        executeAction(server, null, null);
+    }
+
+    public void executeAction(ClientServer server, Consumer<Void> success){
+        executeAction(server,success,null);
+    }
+
+    public void executeSync(ClientServer server){
+        getAction(server).execute();
+    }
+
+    private PteroAction<Void> getAction(ClientServer server){
         PteroAction<Void> action;
         switch (id){
             case 1: action = server.stop();
@@ -29,14 +44,7 @@ public enum ServerState {
             default:
                 action = server.start();
         }
-        action.executeAsync(success, failure);
-    }
-    public void executeAction(ClientServer server) {
-        executeAction(server, null, null);
-    }
-
-    public void executeAction(ClientServer server, Consumer<Void> success){
-        executeAction(server,success,null);
+        return action;
     }
 
 
