@@ -58,6 +58,7 @@ public class MainWindow {
             });
             mad.setVisible(true);
             mf.getMassBtn().setEnabled(false);
+            mad.getRootPane().setDefaultButton(mad.getOkButton());
             mad.getOkButton().addActionListener(ev -> {
                 int index = mad.getPowerAction().getSelectedIndex();
                 ServerState state;
