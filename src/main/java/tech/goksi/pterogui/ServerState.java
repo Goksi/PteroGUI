@@ -20,9 +20,6 @@ public enum ServerState {
     public void executeAction(ClientServer server, Consumer<Void> success, Consumer<? super Throwable> failure){
         getAction(server).executeAsync(success, failure);
     }
-    public void executeAction(ClientServer server) {
-        executeAction(server, null, null);
-    }
 
     public void executeAction(ClientServer server, Consumer<Void> success){
         executeAction(server,success,null);
