@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainWindow {
     private Map<String, ClientServer> servers;
@@ -69,14 +70,20 @@ public class MainWindow {
                             break;
                     default: state = ServerState.START;
                 }
-                /*TODO: error handling*/
+                /*TODO: error handling, need change*/
+                boolean error = false;
                 for(Map.Entry<String, ClientServer> srv : servers.entrySet()){
-                    state.executeAction(srv.getValue());
+                    try{
+                        state.executeSync(srv.getValue());
+                    }catch (Exception ex){
+                        JOptionPane.showMessageDialog(mf, "Failed to send " + state + "signal to servers!", "Error!", JOptionPane.ERROR_MESSAGE);
+                        error = true;
+                        break;
+                    }
                 }
+                if(!error) JOptionPane.showMessageDialog(mf, "Successfully sent " + state + " signal to all servers!", "Action success !", JOptionPane.INFORMATION_MESSAGE);
                 mad.dispose();
                 mf.getMassBtn().setEnabled(true);
-                JOptionPane.showMessageDialog(mf, "Successfully sent " + state + " signal to all servers!", "Action success !", JOptionPane.INFORMATION_MESSAGE);
-
             });
         });
         mf.getEditBtn().addActionListener(e ->{
