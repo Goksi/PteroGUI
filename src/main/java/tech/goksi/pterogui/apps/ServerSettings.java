@@ -90,6 +90,7 @@ public class ServerSettings {
             GenericFrame console = new GenericFrame("PteroGUI | Console", cf, null);
             console.setVisible(true);
             cf.getConsoleTxt().setFont(cf.getConsoleTxt().getFont().deriveFont(11f));
+            cf.getRootPane().setDefaultButton(cf.getCommandBtn());
             WebSocketManager wss = server.getWebSocketBuilder().addEventListeners(new Websocket(cf.getConsoleTxt())).build();
             new SmartScroll(cf.getScrollPane(), SmartScroll.Direction.VERTICAL, SmartScroll.Viewport.END);
             cf.getCommandBtn().addActionListener(event -> {
