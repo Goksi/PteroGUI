@@ -5,8 +5,10 @@ import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.managers.WebSocketManager;
 import tech.goksi.pterogui.ServerState;
 import tech.goksi.pterogui.entities.LazyNode;
+import tech.goksi.pterogui.entities.SmartScroll;
 import tech.goksi.pterogui.events.ClickEvent;
 import tech.goksi.pterogui.events.TreeExpandEvent;
+import tech.goksi.pterogui.events.Websocket;
 import tech.goksi.pterogui.frames.ConsoleFrame;
 import tech.goksi.pterogui.frames.FileManagerFrame;
 import tech.goksi.pterogui.frames.GenericFrame;
@@ -87,7 +89,9 @@ public class ServerSettings {
             ConsoleFrame cf = new ConsoleFrame();
             GenericFrame console = new GenericFrame("PteroGUI | Console", cf, null);
             console.setVisible(true);
+            cf.getConsoleTxt().setFont(cf.getConsoleTxt().getFont().deriveFont(11f));
             WebSocketManager wss = server.getWebSocketBuilder().addEventListeners(new Websocket(cf.getConsoleTxt())).build();
+            new SmartScroll(cf.getScrollPane(), SmartScroll.Direction.VERTICAL, SmartScroll.Viewport.END);
             cf.getCommandBtn().addActionListener(event -> {
                 if(cf.getCommandTxt().getText().length() < 2) JOptionPane.showMessageDialog(cf, "Command can't be that short!", "Invalid command", JOptionPane.WARNING_MESSAGE);
                 else wss.sendCommand(cf.getCommandTxt().getText());
@@ -98,6 +102,7 @@ public class ServerSettings {
                 public void windowClosing(WindowEvent e) {
                     console.dispose();
                     ssf.getConsoleBtn().setEnabled(true);
+                    /*TODO:check if is connected*/
                     wss.shutdown();
                 }
             });

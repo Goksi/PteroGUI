@@ -40,5 +40,5 @@ build/
 data.json
 *.jfd
 *.jfd
-src/main/java/tech/goksi/pterogui/frames/ConsoleForm.jfd
+src/main/java/tech/goksi/pterogui/frames/ConsoleFrame.jfd
 dependency-reduced-pom.xml
