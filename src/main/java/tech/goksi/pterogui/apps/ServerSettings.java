@@ -89,7 +89,7 @@ public class ServerSettings {
             ConsoleFrame cf = new ConsoleFrame();
             GenericFrame console = new GenericFrame("PteroGUI | Console", cf, null);
             console.setVisible(true);
-            cf.getConsoleTxt().setFont(cf.getConsoleTxt().getFont().deriveFont(12f));
+            cf.getConsoleTxt().setFont(cf.getConsoleTxt().getFont().deriveFont(11f));
             WebSocketManager wss = server.getWebSocketBuilder().addEventListeners(new Websocket(cf.getConsoleTxt())).build();
             new SmartScroll(cf.getScrollPane(), SmartScroll.Direction.VERTICAL, SmartScroll.Viewport.END);
             cf.getCommandBtn().addActionListener(event -> {
@@ -102,6 +102,7 @@ public class ServerSettings {
                 public void windowClosing(WindowEvent e) {
                     console.dispose();
                     ssf.getConsoleBtn().setEnabled(true);
+                    /*TODO:check if is connected*/
                     wss.shutdown();
                 }
             });
